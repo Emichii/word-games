@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word Games</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1a1a2e;
+    --card: #16213e;
+    --accent-blue: #4a90d9;
+    --accent-warm: #e07c4f;
+    --accent-green: #5cb85c;
+    --text: #f0f0f0;
+    --text-dim: #a0a8c0;
+    --tile-bg: #2a3a5c;
+    --tile-revealed: #4a90d9;
+    --blank-color: #e07c4f;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== SCREENS ===== */
+  .screen { display: none; min-height: 100vh; flex-direction: column; }
+  .screen.active { display: flex; }
+
+  /* ===== HOME SCREEN ===== */
+  #home {
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+    text-align: center;
+    padding: 40px;
+  }
+
+  #home h1 {
+    font-size: 72px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-warm));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  #home p.subtitle {
+    font-size: 28px;
+    color: var(--text-dim);
+    margin-top: -20px;
+  }
+
+  .game-buttons {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .game-btn {
+    width: 340px;
+    height: 220px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .game-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  }
+
+  .game-btn.wof {
+    background: linear-gradient(135deg, #2a5298, #4a90d9);
+  }
+
+  .game-btn.fitb {
+    background: linear-gradient(135deg, #c0392b, #e07c4f);
+  }
+
+  .game-btn .icon { font-size: 56px; }
+  .game-btn .label { font-size: 28px; }
+
+  /* ===== SHARED GAME LAYOUT ===== */
+  .game-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+    background: rgba(0,0,0,0.3);
+  }
+
+  .game-header h2 { font-size: 36px; }
+
+  .header-controls { display: flex; gap: 16px; align-items: center; }
+
+  .score-display {
+    font-size: 28px;
+    font-weight: 600;
+    padding: 8px 24px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.1);
+  }
+
+  .btn {
+    padding: 14px 32px;
+    border: none;
+    border-radius: 12px;
+    font-size: 22px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s, opacity 0.15s;
+    color: white;
+  }
+
+  .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+  .btn:active { transform: translateY(0); }
+
+  .btn-back { background: #555; }
+  .btn-blue { background: var(--accent-blue); }
+  .btn-warm { background: var(--accent-warm); }
+  .btn-green { background: var(--accent-green); }
+  .btn-outline {
+    background: transparent;
+    border: 2px solid var(--text-dim);
+    color: var(--text-dim);
+  }
+
+  .game-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    gap: 36px;
+  }
+
+  .game-footer {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 30px 40px;
+    flex-wrap: wrap;
+  }
+
+  .category-label {
+    font-size: 30px;
+    font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .progress-text {
+    font-size: 22px;
+    color: var(--text-dim);
+  }
+
+  /* ===== WHEEL OF FORTUNE ===== */
+  #wof-screen { background: linear-gradient(180deg, #1a2744 0%, #1a1a2e 100%); }
+
+  .wof-board {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 16px;
+    max-width: 1100px;
+    padding: 10px;
+  }
+
+  .wof-word {
+    display: flex;
+    gap: 8px;
+  }
+
+  .wof-tile {
+    width: 64px;
+    height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: 700;
+    border-radius: 8px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+  }
+
+  .wof-tile.letter {
+    background: var(--tile-bg);
+    cursor: pointer;
+    border: 2px solid rgba(255,255,255,0.1);
+  }
+
+  .wof-tile.letter:hover { border-color: var(--accent-blue); }
+
+  .wof-tile.letter.revealed {
+    background: var(--tile-revealed);
+    color: white;
+    border-color: transparent;
+    animation: tileReveal 0.4s ease;
+  }
+
+
+  .used-letters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  .used-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  .used-letter.hit {
+    background: var(--accent-green);
+    color: white;
+  }
+
+  .used-letter.miss {
+    background: rgba(255,255,255,0.1);
+    color: var(--text-dim);
+    text-decoration: line-through;
+  }
+
+  @keyframes tileReveal {
+    0% { transform: rotateX(90deg); }
+    100% { transform: rotateX(0deg); }
+  }
+
+  .wof-line {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    width: 100%;
+  }
+
+  /* ===== FILL IN THE BLANK ===== */
+  #fitb-screen { background: linear-gradient(180deg, #2c1810 0%, #1a1a2e 100%); }
+
+  .fitb-phrase {
+    font-size: 48px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.5;
+    max-width: 1000px;
+  }
+
+  .fitb-blank {
+    display: inline-block;
+    min-width: 180px;
+    border-bottom: 4px solid var(--blank-color);
+    margin: 0 8px;
+    text-align: center;
+    color: var(--blank-color);
+    transition: all 0.4s;
+  }
+
+  .fitb-blank.revealed {
+    border-bottom-color: var(--accent-green);
+    color: var(--accent-green);
+    animation: blankReveal 0.5s ease;
+  }
+
+  @keyframes blankReveal {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .fitb-source {
+    font-size: 22px;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  /* ===== CUSTOM INPUT MODAL ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 40px;
+    width: 600px;
+    max-width: 90vw;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .modal h3 {
+    font-size: 30px;
+    margin-bottom: 24px;
+  }
+
+  .modal label {
+    display: block;
+    font-size: 20px;
+    margin-bottom: 8px;
+    color: var(--text-dim);
+  }
+
+  .modal input, .modal textarea {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 20px;
+    border-radius: 10px;
+    border: 2px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+    margin-bottom: 20px;
+    font-family: inherit;
+  }
+
+  .modal input:focus, .modal textarea:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+  }
+
+  .modal textarea { min-height: 100px; resize: vertical; }
+
+  .modal-buttons { display: flex; gap: 16px; justify-content: flex-end; margin-top: 10px; }
+
+  .modal .hint { font-size: 16px; color: var(--text-dim); margin-top: -12px; margin-bottom: 20px; }
+
+  /* ===== SCORE TOGGLE ===== */
+  .score-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    color: var(--text-dim);
+    cursor: pointer;
+  }
+
+  .toggle-switch {
+    width: 48px;
+    height: 26px;
+    background: #555;
+    border-radius: 13px;
+    position: relative;
+    transition: background 0.3s;
+  }
+
+  .toggle-switch.on { background: var(--accent-green); }
+
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: left 0.3s;
+  }
+
+  .toggle-switch.on::after { left: 25px; }
+
+  /* ===== END SCREEN ===== */
+  .end-message {
+    font-size: 56px;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .end-score {
+    font-size: 32px;
+    color: var(--text-dim);
+    text-align: center;
+  }
+
+  .end-grade {
+    font-size: 120px;
+    font-weight: 800;
+    text-align: center;
+    margin: 10px 0;
+  }
+
+  .grade-aplus { color: #ffd700; }
+  .grade-a { color: #5cb85c; }
+  .grade-b { color: #4a90d9; }
+  .grade-c { color: #e07c4f; }
+  .grade-d { color: #d9534f; }
+  .grade-f { color: #c0392b; }
+</style>
+</head>
+<body>
+
+<!-- ===== HOME SCREEN ===== -->
+<div id="home" class="screen active">
+  <h1>Word Games</h1>
+  <p class="subtitle">Interactive Group Activities</p>
+  <div class="game-buttons">
+    <button class="game-btn wof" onclick="startWOF()">
+      <span class="icon">&#x1F3B0;</span>
+      <span class="label">Wheel of Fortune</span>
+    </button>
+    <button class="game-btn fitb" onclick="startFITB()">
+      <span class="icon">&#x270D;&#xFE0F;</span>
+      <span class="label">Fill in the Blank</span>
+    </button>
+  </div>
+</div>
+
+<!-- ===== WHEEL OF FORTUNE ===== -->
+<div id="wof-screen" class="screen">
+  <div class="game-header">
+    <h2>Wheel of Fortune</h2>
+    <div class="header-controls">
+      <div id="wof-puzzle-pts" class="score-display">Puzzle Points: 26</div>
+      <div id="wof-total-pts" class="score-display">Total: 0</div>
+      <button class="btn btn-outline" onclick="openWofCustom()">+ Custom</button>
+      <button class="btn btn-back" onclick="goHome()">Menu</button>
+    </div>
+  </div>
+
+  <div class="game-body">
+    <div class="category-label" id="wof-category"></div>
+    <div class="wof-board" id="wof-board"></div>
+    <div id="wof-used-letters" class="used-letters"></div>
+    <div class="progress-text" id="wof-progress"></div>
+  </div>
+
+  <div class="game-footer">
+    <button class="btn btn-blue" onclick="wofRevealRandom(); this.blur();">Reveal a Letter</button>
+    <button class="btn btn-green" onclick="wofRevealAll(); this.blur();">Reveal All</button>
+    <button class="btn btn-warm" onclick="wofNext(); this.blur();">Next Puzzle &rarr;</button>
+    <button class="btn btn-back" onclick="wofFinish(); this.blur();">Finish Game</button>
+  </div>
+</div>
+
+<!-- ===== WOF END SCREEN ===== -->
+<div id="wof-end" class="screen">
+  <div class="game-body" style="gap: 30px;">
+    <div class="end-message">Great Job!</div>
+    <div class="end-score" id="wof-end-puzzles"></div>
+    <div class="end-score" id="wof-end-points"></div>
+    <div class="end-grade" id="wof-end-grade"></div>
+    <div style="display:flex; gap:20px; margin-top:20px;">
+      <button class="btn btn-blue" onclick="startWOF()">Play Again</button>
+      <button class="btn btn-back" onclick="goHome()">Menu</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FILL IN THE BLANK ===== -->
+<div id="fitb-screen" class="screen">
+  <div class="game-header">
+    <h2>Fill in the Blank</h2>
+    <div class="header-controls">
+      <div id="fitb-score" class="score-display" style="display:none;">Score: 0</div>
+      <label class="score-toggle" onclick="toggleFitbScore()">
+        <div id="fitb-score-toggle" class="toggle-switch"></div>
+        Score
+      </label>
+      <button class="btn btn-outline" onclick="openFitbCustom()">+ Custom</button>
+      <button class="btn btn-back" onclick="goHome()">Menu</button>
+    </div>
+  </div>
+
+  <div class="game-body">
+    <div class="category-label" id="fitb-category"></div>
+    <div class="fitb-phrase" id="fitb-phrase"></div>
+    <div class="fitb-source" id="fitb-source"></div>
+    <div class="progress-text" id="fitb-progress"></div>
+  </div>
+
+  <div class="game-footer">
+    <button class="btn btn-warm" onclick="fitbReveal()">Reveal Answer</button>
+    <button class="btn btn-blue" onclick="fitbNext()">Next Phrase &rarr;</button>
+  </div>
+</div>
+
+<!-- ===== WOF CUSTOM MODAL ===== -->
+<div id="wof-modal" class="modal-overlay">
+  <div class="modal">
+    <h3>Add Custom Puzzle</h3>
+    <label>Category</label>
+    <input type="text" id="wof-custom-cat" placeholder="e.g., Famous Person, Food, Place">
+    <label>Phrase</label>
+    <input type="text" id="wof-custom-phrase" placeholder="e.g., APPLE PIE">
+    <p class="hint">Letters will be hidden as tiles. Spaces and punctuation stay visible.</p>
+    <div class="modal-buttons">
+      <button class="btn btn-back" onclick="closeModal('wof-modal')">Cancel</button>
+      <button class="btn btn-blue" onclick="addWofCustom()">Add Puzzle</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FITB CUSTOM MODAL ===== -->
+<div id="fitb-modal" class="modal-overlay">
+  <div class="modal">
+    <h3>Add Custom Phrase</h3>
+    <label>Category (optional)</label>
+    <input type="text" id="fitb-custom-cat" placeholder="e.g., Proverb, Song Lyric">
+    <label>Full Phrase</label>
+    <input type="text" id="fitb-custom-phrase" placeholder="e.g., An apple a day keeps the doctor away">
+    <label>Word(s) to blank out</label>
+    <input type="text" id="fitb-custom-blank" placeholder="e.g., doctor away">
+    <p class="hint">Type the exact word(s) from the phrase that should be hidden.</p>
+    <label>Source (optional)</label>
+    <input type="text" id="fitb-custom-source" placeholder="e.g., Common Proverb">
+    <div class="modal-buttons">
+      <button class="btn btn-back" onclick="closeModal('fitb-modal')">Cancel</button>
+      <button class="btn btn-warm" onclick="addFitbCustom()">Add Phrase</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  PRE-LOADED CONTENT
+// ============================================================
+
+const wofPuzzles = [
+  // Common Sayings
+  { category: "Common Saying", phrase: "ACTIONS SPEAK LOUDER THAN WORDS" },
+  { category: "Common Saying", phrase: "EVERY CLOUD HAS A SILVER LINING" },
+  { category: "Common Saying", phrase: "THE EARLY BIRD CATCHES THE WORM" },
+  { category: "Common Saying", phrase: "HOME SWEET HOME" },
+  { category: "Common Saying", phrase: "PRACTICE MAKES PERFECT" },
+  { category: "Common Saying", phrase: "LAUGHTER IS THE BEST MEDICINE" },
+  { category: "Common Saying", phrase: "A PENNY SAVED IS A PENNY EARNED" },
+  { category: "Common Saying", phrase: "YOU CANT TEACH AN OLD DOG NEW TRICKS" },
+  { category: "Common Saying", phrase: "WHEN LIFE GIVES YOU LEMONS MAKE LEMONADE" },
+  { category: "Common Saying", phrase: "ALL THAT GLITTERS IS NOT GOLD" },
+
+  // Food & Drink
+  { category: "Food", phrase: "APPLE PIE" },
+  { category: "Food", phrase: "CHOCOLATE CHIP COOKIES" },
+  { category: "Food", phrase: "MASHED POTATOES AND GRAVY" },
+  { category: "Food", phrase: "PEANUT BUTTER AND JELLY" },
+  { category: "Food", phrase: "STRAWBERRY SHORTCAKE" },
+
+  // Places
+  { category: "Place", phrase: "GRAND CANYON" },
+  { category: "Place", phrase: "STATUE OF LIBERTY" },
+  { category: "Place", phrase: "GOLDEN GATE BRIDGE" },
+  { category: "Place", phrase: "MOUNT RUSHMORE" },
+  { category: "Place", phrase: "NIAGARA FALLS" },
+
+  // Animals
+  { category: "Animal", phrase: "BALD EAGLE" },
+  { category: "Animal", phrase: "GOLDEN RETRIEVER" },
+  { category: "Animal", phrase: "MONARCH BUTTERFLY" },
+  { category: "Animal", phrase: "HUMMINGBIRD" },
+  { category: "Animal", phrase: "SEA TURTLE" },
+
+  // Around the House
+  { category: "Around the House", phrase: "ROCKING CHAIR" },
+  { category: "Around the House", phrase: "KITCHEN TABLE" },
+  { category: "Around the House", phrase: "FRONT PORCH" },
+  { category: "Around the House", phrase: "FLOWER GARDEN" },
+  { category: "Around the House", phrase: "PICTURE FRAME" },
+
+  // Fun Phrases
+  { category: "Fun Phrase", phrase: "BREAK A LEG" },
+  { category: "Fun Phrase", phrase: "PIECE OF CAKE" },
+  { category: "Fun Phrase", phrase: "UNDER THE WEATHER" },
+  { category: "Fun Phrase", phrase: "RAINING CATS AND DOGS" },
+  { category: "Fun Phrase", phrase: "EASY AS PIE" },
+];
+
+const fitbPhrases = [
+  // Proverbs
+  { category: "Proverb", phrase: "A stitch in time saves ___.", answer: "nine", source: "Common Proverb" },
+  { category: "Proverb", phrase: "An apple a day keeps the ___ away.", answer: "doctor", source: "Common Proverb" },
+  { category: "Proverb", phrase: "The pen is mightier than the ___.", answer: "sword", source: "Common Proverb" },
+  { category: "Proverb", phrase: "A bird in the hand is worth two in the ___.", answer: "bush", source: "Common Proverb" },
+  { category: "Proverb", phrase: "Don't count your ___ before they hatch.", answer: "chickens", source: "Common Proverb" },
+  { category: "Proverb", phrase: "You can lead a horse to water but you can't make it ___.", answer: "drink", source: "Common Proverb" },
+  { category: "Proverb", phrase: "Curiosity killed the ___.", answer: "cat", source: "Common Proverb" },
+  { category: "Proverb", phrase: "Rome wasn't built in a ___.", answer: "day", source: "Common Proverb" },
+  { category: "Proverb", phrase: "When in Rome, do as the ___ do.", answer: "Romans", source: "Common Proverb" },
+  { category: "Proverb", phrase: "Two heads are better than ___.", answer: "one", source: "Common Proverb" },
+
+  // Famous Phrases
+  { category: "Famous Phrase", phrase: "That's one small step for man, one giant ___ for mankind.", answer: "leap", source: "Neil Armstrong" },
+  { category: "Famous Phrase", phrase: "To be or not to be, that is the ___.", answer: "question", source: "William Shakespeare" },
+  { category: "Famous Phrase", phrase: "I think, therefore I ___.", answer: "am", source: "Rene Descartes" },
+  { category: "Famous Phrase", phrase: "The only thing we have to fear is fear ___.", answer: "itself", source: "Franklin D. Roosevelt" },
+  { category: "Famous Phrase", phrase: "Ask not what your country can do for you, ask what you can do for your ___.", answer: "country", source: "John F. Kennedy" },
+
+  // Everyday Sayings
+  { category: "Everyday Saying", phrase: "Better late than ___.", answer: "never", source: "Common Saying" },
+  { category: "Everyday Saying", phrase: "A picture is worth a thousand ___.", answer: "words", source: "Common Saying" },
+  { category: "Everyday Saying", phrase: "The grass is always greener on the other ___.", answer: "side", source: "Common Saying" },
+  { category: "Everyday Saying", phrase: "Don't put all your eggs in one ___.", answer: "basket", source: "Common Saying" },
+  { category: "Everyday Saying", phrase: "Every dog has its ___.", answer: "day", source: "Common Saying" },
+  { category: "Everyday Saying", phrase: "If the shoe fits, ___ it.", answer: "wear", source: "Common Saying" },
+  { category: "Everyday Saying", phrase: "Let sleeping dogs ___.", answer: "lie", source: "Common Saying" },
+  { category: "Everyday Saying", phrase: "The best things in life are ___.", answer: "free", source: "Common Saying" },
+  { category: "Everyday Saying", phrase: "Where there's a will, there's a ___.", answer: "way", source: "Common Saying" },
+  { category: "Everyday Saying", phrase: "You can't judge a book by its ___.", answer: "cover", source: "Common Saying" },
+
+  // Nature & Weather
+  { category: "Nature", phrase: "April showers bring May ___.", answer: "flowers", source: "Common Saying" },
+  { category: "Nature", phrase: "Red sky at night, sailor's ___.", answer: "delight", source: "Weather Proverb" },
+  { category: "Nature", phrase: "Make hay while the ___ shines.", answer: "sun", source: "Common Proverb" },
+  { category: "Nature", phrase: "Every rose has its ___.", answer: "thorn", source: "Common Saying" },
+  { category: "Nature", phrase: "Slow and steady wins the ___.", answer: "race", source: "Aesop's Fable" },
+
+  // Holidays & Traditions
+  { category: "Holiday", phrase: "Jingle bells, jingle bells, jingle all the ___.", answer: "way", source: "Christmas Song" },
+  { category: "Holiday", phrase: "Over the river and through the woods to ___ house we go.", answer: "grandmother's", source: "Thanksgiving Song" },
+  { category: "Holiday", phrase: "Twinkle twinkle little ___.", answer: "star", source: "Nursery Rhyme" },
+  { category: "Holiday", phrase: "Jack and Jill went up the ___.", answer: "hill", source: "Nursery Rhyme" },
+  { category: "Holiday", phrase: "Mary had a little ___.", answer: "lamb", source: "Nursery Rhyme" },
+];
+
+// ============================================================
+//  GAME STATE
+// ============================================================
+
+let wofList = [], wofIndex = 0;
+let wofPuzzlePoints = 26;    // Points remaining for current puzzle
+let wofTotalPoints = 0;       // Cumulative points scored
+let wofPossiblePoints = 0;    // Cumulative possible points (26 per puzzle)
+let wofPuzzlesCompleted = 0;
+let wofPuzzleFinalized = false; // Whether current puzzle's score has been banked
+let fitbList = [], fitbIndex = 0, fitbScore = 0, fitbShowScore = false;
+let fitbRevealed = false;
+
+// ============================================================
+//  NAVIGATION
+// ============================================================
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goHome() { showScreen('home'); }
+
+// ============================================================
+//  SHUFFLE HELPER
+// ============================================================
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ============================================================
+//  WHEEL OF FORTUNE
+// ============================================================
+
+function startWOF() {
+  wofList = shuffle(wofPuzzles);
+  wofIndex = 0;
+  wofTotalPoints = 0;
+  wofPossiblePoints = 0;
+  wofPuzzlesCompleted = 0;
+  showScreen('wof-screen');
+  renderWofPuzzle();
+}
+
+function renderWofPuzzle() {
+  const puzzle = wofList[wofIndex];
+  document.getElementById('wof-category').textContent = puzzle.category;
+  document.getElementById('wof-progress').textContent =
+    `Puzzle ${wofIndex + 1} of ${wofList.length}`;
+
+  const board = document.getElementById('wof-board');
+  board.innerHTML = '';
+  resetUsedLetters();
+  wofPuzzlePoints = 26;
+  wofPuzzleFinalized = false;
+  updateWofScoreDisplay();
+
+  // Split phrase into words — each word is wrapped so it never breaks mid-word
+  const words = puzzle.phrase.split(' ');
+  words.forEach(word => {
+    const wordGroup = document.createElement('div');
+    wordGroup.classList.add('wof-word');
+
+    for (let i = 0; i < word.length; i++) {
+      const ch = word[i];
+      const tile = document.createElement('div');
+      tile.classList.add('wof-tile');
+
+      if (/[A-Za-z]/.test(ch)) {
+        tile.classList.add('letter');
+        tile.dataset.letter = ch.toUpperCase();
+        tile.dataset.revealed = 'false';
+        tile.addEventListener('click', () => revealTile(tile));
+      } else {
+        // Punctuation — show it directly
+        tile.textContent = ch;
+        tile.style.background = 'transparent';
+        tile.style.color = 'var(--text-dim)';
+      }
+      wordGroup.appendChild(tile);
+    }
+
+    board.appendChild(wordGroup);
+  });
+}
+
+function revealTile(tile) {
+  if (tile.dataset.revealed === 'true') return;
+  tile.dataset.revealed = 'true';
+  tile.classList.add('revealed');
+  tile.textContent = tile.dataset.letter;
+}
+
+function wofRevealRandom() {
+  const hidden = [...document.querySelectorAll('.wof-tile.letter:not(.revealed)')];
+  if (hidden.length === 0) return;
+  const tile = hidden[Math.floor(Math.random() * hidden.length)];
+  revealTile(tile);
+}
+
+// Keyboard letter guessing — press a letter key to reveal all matching tiles
+document.addEventListener('keydown', (e) => {
+  // Only active on WOF screen, ignore if a modal or input is focused
+  if (!document.getElementById('wof-screen').classList.contains('active')) return;
+  if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+  if (document.getElementById('wof-modal').classList.contains('active')) return;
+
+  const letter = e.key.toUpperCase();
+  if (!/^[A-Z]$/.test(letter)) return;
+
+  // Prevent the keypress from also triggering a focused button
+  e.preventDefault();
+
+  const tiles = document.querySelectorAll('.wof-tile.letter:not(.revealed)');
+  let found = false;
+  tiles.forEach(tile => {
+    if (tile.dataset.letter === letter) {
+      revealTile(tile);
+      found = true;
+    }
+  });
+
+  // Show the guessed letter in the used-letters display
+  updateUsedLetters(letter, found);
+});
+
+let usedLetters = new Set();
+
+function resetUsedLetters() {
+  usedLetters = new Set();
+  const el = document.getElementById('wof-used-letters');
+  if (el) el.innerHTML = '';
+}
+
+function updateUsedLetters(letter, found) {
+  if (usedLetters.has(letter)) return;
+  usedLetters.add(letter);
+
+  // Wrong guess loses a point
+  if (!found && wofPuzzlePoints > 0) {
+    wofPuzzlePoints--;
+    updateWofScoreDisplay();
+  }
+
+  const el = document.getElementById('wof-used-letters');
+  if (!el) return;
+  const span = document.createElement('span');
+  span.textContent = letter;
+  span.className = found ? 'used-letter hit' : 'used-letter miss';
+  el.appendChild(span);
+}
+
+function wofFinalizePuzzle() {
+  if (wofPuzzleFinalized) return;
+  wofPuzzleFinalized = true;
+  wofTotalPoints += wofPuzzlePoints;
+  wofPossiblePoints += 26;
+  wofPuzzlesCompleted++;
+  updateWofScoreDisplay();
+}
+
+function wofRevealAll() {
+  document.querySelectorAll('.wof-tile.letter:not(.revealed)').forEach(revealTile);
+  wofFinalizePuzzle();
+}
+
+function wofNext() {
+  // Finalize current puzzle score if not already done
+  wofFinalizePuzzle();
+  wofIndex++;
+  if (wofIndex >= wofList.length) {
+    wofIndex = 0;
+    wofList = shuffle(wofList);
+  }
+  renderWofPuzzle();
+}
+
+function wofFinish() {
+  // Finalize current puzzle if they were mid-puzzle
+  wofFinalizePuzzle();
+  // Calculate grade
+  const pct = wofPossiblePoints > 0 ? Math.round((wofTotalPoints / wofPossiblePoints) * 100) : 0;
+  let grade, gradeClass;
+  if (pct >= 98)      { grade = 'A+'; gradeClass = 'grade-aplus'; }
+  else if (pct >= 90) { grade = 'A';  gradeClass = 'grade-a'; }
+  else if (pct >= 80) { grade = 'B';  gradeClass = 'grade-b'; }
+  else if (pct >= 70) { grade = 'C';  gradeClass = 'grade-c'; }
+  else if (pct >= 60) { grade = 'D';  gradeClass = 'grade-d'; }
+  else                { grade = 'F';  gradeClass = 'grade-f'; }
+
+  document.getElementById('wof-end-puzzles').textContent =
+    `Puzzles Completed: ${wofPuzzlesCompleted}`;
+  document.getElementById('wof-end-points').textContent =
+    `Score: ${wofTotalPoints} out of ${wofPossiblePoints} possible points (${pct}%)`;
+  const gradeEl = document.getElementById('wof-end-grade');
+  gradeEl.textContent = grade;
+  gradeEl.className = 'end-grade ' + gradeClass;
+  showScreen('wof-end');
+}
+
+function updateWofScoreDisplay() {
+  document.getElementById('wof-puzzle-pts').textContent = `Puzzle Points: ${wofPuzzlePoints}`;
+  document.getElementById('wof-total-pts').textContent = `Total: ${wofTotalPoints}`;
+}
+
+// ============================================================
+//  FILL IN THE BLANK
+// ============================================================
+
+function startFITB() {
+  fitbList = shuffle(fitbPhrases);
+  fitbIndex = 0;
+  fitbScore = 0;
+  fitbRevealed = false;
+  updateFitbScoreDisplay();
+  showScreen('fitb-screen');
+  renderFitbPhrase();
+}
+
+function renderFitbPhrase() {
+  const item = fitbList[fitbIndex];
+  fitbRevealed = false;
+
+  document.getElementById('fitb-category').textContent = item.category || '';
+  document.getElementById('fitb-source').textContent = item.source ? `— ${item.source}` : '';
+  document.getElementById('fitb-progress').textContent =
+    `Phrase ${fitbIndex + 1} of ${fitbList.length}`;
+
+  // Build phrase with blanks
+  const phraseEl = document.getElementById('fitb-phrase');
+
+  // Replace the answer word(s) with blank spans
+  const answers = Array.isArray(item.answer) ? item.answer : [item.answer];
+  let html = escapeHtml(item.phrase);
+
+  answers.forEach(ans => {
+    // Replace "___" placeholder if present, otherwise replace the answer word
+    if (html.includes('___')) {
+      html = html.replace('___',
+        `<span class="fitb-blank" data-answer="${escapeHtml(ans)}">&nbsp;</span>`);
+    }
+  });
+
+  phraseEl.innerHTML = html;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function fitbReveal() {
+  if (fitbRevealed) return;
+  fitbRevealed = true;
+  document.querySelectorAll('.fitb-blank').forEach(blank => {
+    blank.textContent = blank.dataset.answer;
+    blank.classList.add('revealed');
+  });
+  fitbScore++;
+  updateFitbScoreDisplay();
+}
+
+function fitbNext() {
+  fitbIndex++;
+  if (fitbIndex >= fitbList.length) {
+    fitbIndex = 0;
+    fitbList = shuffle(fitbList);
+  }
+  renderFitbPhrase();
+}
+
+function toggleFitbScore() {
+  fitbShowScore = !fitbShowScore;
+  document.getElementById('fitb-score-toggle').classList.toggle('on', fitbShowScore);
+  document.getElementById('fitb-score').style.display = fitbShowScore ? '' : 'none';
+}
+
+function updateFitbScoreDisplay() {
+  document.getElementById('fitb-score').textContent = `Score: ${fitbScore}`;
+}
+
+// ============================================================
+//  CUSTOM CONTENT MODALS
+// ============================================================
+
+function openWofCustom() {
+  document.getElementById('wof-custom-cat').value = '';
+  document.getElementById('wof-custom-phrase').value = '';
+  document.getElementById('wof-modal').classList.add('active');
+}
+
+function openFitbCustom() {
+  document.getElementById('fitb-custom-cat').value = '';
+  document.getElementById('fitb-custom-phrase').value = '';
+  document.getElementById('fitb-custom-blank').value = '';
+  document.getElementById('fitb-custom-source').value = '';
+  document.getElementById('fitb-modal').classList.add('active');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+}
+
+function addWofCustom() {
+  const cat = document.getElementById('wof-custom-cat').value.trim() || 'Custom';
+  const phrase = document.getElementById('wof-custom-phrase').value.trim().toUpperCase();
+  if (!phrase) return;
+
+  const newPuzzle = { category: cat, phrase: phrase };
+  // Insert right after current puzzle so it shows next
+  wofList.splice(wofIndex + 1, 0, newPuzzle);
+  closeModal('wof-modal');
+  document.getElementById('wof-progress').textContent =
+    `Puzzle ${wofIndex + 1} of ${wofList.length}`;
+}
+
+function addFitbCustom() {
+  const cat = document.getElementById('fitb-custom-cat').value.trim() || '';
+  const phrase = document.getElementById('fitb-custom-phrase').value.trim();
+  const blankWords = document.getElementById('fitb-custom-blank').value.trim();
+  const source = document.getElementById('fitb-custom-source').value.trim();
+  if (!phrase || !blankWords) return;
+
+  // Replace blank words in phrase with ___
+  let displayPhrase = phrase;
+  const answers = blankWords.split(/\s+/);
+  answers.forEach(word => {
+    displayPhrase = displayPhrase.replace(new RegExp(word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'), '___');
+  });
+
+  const newItem = {
+    category: cat,
+    phrase: displayPhrase,
+    answer: answers,
+    source: source
+  };
+
+  fitbList.splice(fitbIndex + 1, 0, newItem);
+  closeModal('fitb-modal');
+  document.getElementById('fitb-progress').textContent =
+    `Phrase ${fitbIndex + 1} of ${fitbList.length}`;
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>
