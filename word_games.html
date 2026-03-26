@@ -395,6 +395,69 @@
     font-style: italic;
   }
 
+  /* ===== MULTIPLE CHOICE ===== */
+  .mc-choices {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 10px;
+  }
+
+  .mc-btn {
+    min-width: 240px;
+    padding: 20px 36px;
+    border: 3px solid rgba(255,255,255,0.2);
+    border-radius: 16px;
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+    font-size: 28px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .mc-btn:hover:not(.disabled) {
+    border-color: var(--accent-blue);
+    background: rgba(74,144,217,0.15);
+    transform: translateY(-2px);
+  }
+
+  .mc-btn .mc-label {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-dim);
+    margin-right: 10px;
+  }
+
+  .mc-btn.correct {
+    border-color: var(--accent-green);
+    background: rgba(92,184,92,0.25);
+    color: #5cb85c;
+    animation: mcCorrect 0.4s ease;
+  }
+
+  .mc-btn.wrong {
+    border-color: #d9534f;
+    background: rgba(217,83,79,0.2);
+    color: #d9534f;
+    opacity: 0.7;
+  }
+
+  .mc-btn.disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+
+  .mc-btn.disabled.correct { opacity: 1; }
+
+  @keyframes mcCorrect {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
   /* ===== CUSTOM INPUT MODAL ===== */
   .modal-overlay {
     display: none;
@@ -688,12 +751,12 @@
   <div class="game-body">
     <div class="category-label" id="fitb-category"></div>
     <div class="fitb-phrase" id="fitb-phrase"></div>
+    <div class="mc-choices" id="fitb-choices"></div>
     <div class="fitb-source" id="fitb-source"></div>
     <div class="progress-text" id="fitb-progress"></div>
   </div>
 
   <div class="game-footer">
-    <button class="btn btn-warm" onclick="fitbReveal()">Reveal Answer</button>
     <button class="btn btn-blue" onclick="fitbNext()">Next Phrase &rarr;</button>
   </div>
 </div>
@@ -722,9 +785,12 @@
     <input type="text" id="fitb-custom-cat" placeholder="e.g., Proverb, Song Lyric">
     <label>Full Phrase</label>
     <input type="text" id="fitb-custom-phrase" placeholder="e.g., An apple a day keeps the doctor away">
-    <label>Word(s) to blank out</label>
-    <input type="text" id="fitb-custom-blank" placeholder="e.g., doctor away">
-    <p class="hint">Type the exact word(s) from the phrase that should be hidden.</p>
+    <label>Word to blank out</label>
+    <input type="text" id="fitb-custom-blank" placeholder="e.g., doctor">
+    <p class="hint">Type the exact word from the phrase that should be hidden.</p>
+    <label>Wrong answers (2, comma separated)</label>
+    <input type="text" id="fitb-custom-wrong" placeholder="e.g., nurse, lawyer">
+    <p class="hint">Two plausible wrong answers for multiple choice.</p>
     <label>Source (optional)</label>
     <input type="text" id="fitb-custom-source" placeholder="e.g., Common Proverb">
     <div class="modal-buttons">
@@ -995,95 +1061,95 @@ const wofPacks = {
 
 const fitbPacks = {
   "Proverbs": [
-    { category: "Proverb", phrase: "A stitch in time saves ___.", answer: "nine", source: "Common Proverb" },
-    { category: "Proverb", phrase: "An apple a day keeps the ___ away.", answer: "doctor", source: "Common Proverb" },
-    { category: "Proverb", phrase: "The pen is mightier than the ___.", answer: "sword", source: "Common Proverb" },
-    { category: "Proverb", phrase: "A bird in the hand is worth two in the ___.", answer: "bush", source: "Common Proverb" },
-    { category: "Proverb", phrase: "Don't count your ___ before they hatch.", answer: "chickens", source: "Common Proverb" },
-    { category: "Proverb", phrase: "You can lead a horse to water but you can't make it ___.", answer: "drink", source: "Common Proverb" },
-    { category: "Proverb", phrase: "Curiosity killed the ___.", answer: "cat", source: "Common Proverb" },
-    { category: "Proverb", phrase: "Rome wasn't built in a ___.", answer: "day", source: "Common Proverb" },
-    { category: "Proverb", phrase: "When in Rome, do as the ___ do.", answer: "Romans", source: "Common Proverb" },
-    { category: "Proverb", phrase: "Two heads are better than ___.", answer: "one", source: "Common Proverb" },
-    { category: "Proverb", phrase: "The early bird catches the ___.", answer: "worm", source: "Common Proverb" },
-    { category: "Proverb", phrase: "Don't put all your eggs in one ___.", answer: "basket", source: "Common Proverb" },
-    { category: "Proverb", phrase: "Actions speak louder than ___.", answer: "words", source: "Common Proverb" },
-    { category: "Proverb", phrase: "If the shoe fits, ___ it.", answer: "wear", source: "Common Proverb" },
+    { category: "Proverb", phrase: "A stitch in time saves ___.", answer: "nine", wrong: ["five", "ten"], source: "Common Proverb" },
+    { category: "Proverb", phrase: "An apple a day keeps the ___ away.", answer: "doctor", wrong: ["dentist", "teacher"], source: "Common Proverb" },
+    { category: "Proverb", phrase: "The pen is mightier than the ___.", answer: "sword", wrong: ["shield", "hammer"], source: "Common Proverb" },
+    { category: "Proverb", phrase: "A bird in the hand is worth two in the ___.", answer: "bush", wrong: ["tree", "nest"], source: "Common Proverb" },
+    { category: "Proverb", phrase: "Don't count your ___ before they hatch.", answer: "chickens", wrong: ["eggs", "ducks"], source: "Common Proverb" },
+    { category: "Proverb", phrase: "You can lead a horse to water but you can't make it ___.", answer: "drink", wrong: ["swim", "stay"], source: "Common Proverb" },
+    { category: "Proverb", phrase: "Curiosity killed the ___.", answer: "cat", wrong: ["dog", "bird"], source: "Common Proverb" },
+    { category: "Proverb", phrase: "Rome wasn't built in a ___.", answer: "day", wrong: ["week", "year"], source: "Common Proverb" },
+    { category: "Proverb", phrase: "When in Rome, do as the ___ do.", answer: "Romans", wrong: ["Greeks", "locals"], source: "Common Proverb" },
+    { category: "Proverb", phrase: "Two heads are better than ___.", answer: "one", wrong: ["three", "none"], source: "Common Proverb" },
+    { category: "Proverb", phrase: "The early bird catches the ___.", answer: "worm", wrong: ["fly", "seed"], source: "Common Proverb" },
+    { category: "Proverb", phrase: "Don't put all your eggs in one ___.", answer: "basket", wrong: ["carton", "bowl"], source: "Common Proverb" },
+    { category: "Proverb", phrase: "Actions speak louder than ___.", answer: "words", wrong: ["thoughts", "deeds"], source: "Common Proverb" },
+    { category: "Proverb", phrase: "If the shoe fits, ___ it.", answer: "wear", wrong: ["buy", "keep"], source: "Common Proverb" },
   ],
   "Famous Phrases": [
-    { category: "Famous Phrase", phrase: "That's one small step for man, one giant ___ for mankind.", answer: "leap", source: "Neil Armstrong" },
-    { category: "Famous Phrase", phrase: "To be or not to be, that is the ___.", answer: "question", source: "William Shakespeare" },
-    { category: "Famous Phrase", phrase: "I think, therefore I ___.", answer: "am", source: "Rene Descartes" },
-    { category: "Famous Phrase", phrase: "The only thing we have to fear is fear ___.", answer: "itself", source: "Franklin D. Roosevelt" },
-    { category: "Famous Phrase", phrase: "Ask not what your country can do for you, ask what you can do for your ___.", answer: "country", source: "John F. Kennedy" },
-    { category: "Famous Phrase", phrase: "Float like a butterfly, sting like a ___.", answer: "bee", source: "Muhammad Ali" },
-    { category: "Famous Phrase", phrase: "That is one small step for man, one giant leap for ___.", answer: "mankind", source: "Neil Armstrong" },
-    { category: "Famous Phrase", phrase: "I have a ___.", answer: "dream", source: "Martin Luther King Jr." },
+    { category: "Famous Phrase", phrase: "That's one small step for man, one giant ___ for mankind.", answer: "leap", wrong: ["step", "jump"], source: "Neil Armstrong" },
+    { category: "Famous Phrase", phrase: "To be or not to be, that is the ___.", answer: "question", wrong: ["answer", "problem"], source: "William Shakespeare" },
+    { category: "Famous Phrase", phrase: "I think, therefore I ___.", answer: "am", wrong: ["exist", "know"], source: "Rene Descartes" },
+    { category: "Famous Phrase", phrase: "The only thing we have to fear is fear ___.", answer: "itself", wrong: ["alone", "within"], source: "Franklin D. Roosevelt" },
+    { category: "Famous Phrase", phrase: "Ask not what your country can do for you, ask what you can do for your ___.", answer: "country", wrong: ["family", "neighbor"], source: "John F. Kennedy" },
+    { category: "Famous Phrase", phrase: "Float like a butterfly, sting like a ___.", answer: "bee", wrong: ["wasp", "scorpion"], source: "Muhammad Ali" },
+    { category: "Famous Phrase", phrase: "I have a ___.", answer: "dream", wrong: ["plan", "wish"], source: "Martin Luther King Jr." },
+    { category: "Famous Phrase", phrase: "One small step for man, one giant leap for ___.", answer: "mankind", wrong: ["America", "science"], source: "Neil Armstrong" },
   ],
   "Everyday Sayings": [
-    { category: "Everyday Saying", phrase: "Better late than ___.", answer: "never", source: "Common Saying" },
-    { category: "Everyday Saying", phrase: "A picture is worth a thousand ___.", answer: "words", source: "Common Saying" },
-    { category: "Everyday Saying", phrase: "The grass is always greener on the other ___.", answer: "side", source: "Common Saying" },
-    { category: "Everyday Saying", phrase: "Every dog has its ___.", answer: "day", source: "Common Saying" },
-    { category: "Everyday Saying", phrase: "Let sleeping dogs ___.", answer: "lie", source: "Common Saying" },
-    { category: "Everyday Saying", phrase: "The best things in life are ___.", answer: "free", source: "Common Saying" },
-    { category: "Everyday Saying", phrase: "Where there's a will, there's a ___.", answer: "way", source: "Common Saying" },
-    { category: "Everyday Saying", phrase: "You can't judge a book by its ___.", answer: "cover", source: "Common Saying" },
-    { category: "Everyday Saying", phrase: "When it rains, it ___.", answer: "pours", source: "Common Saying" },
-    { category: "Everyday Saying", phrase: "Beggars can't be ___.", answer: "choosers", source: "Common Saying" },
-    { category: "Everyday Saying", phrase: "An ounce of prevention is worth a pound of ___.", answer: "cure", source: "Benjamin Franklin" },
-    { category: "Everyday Saying", phrase: "Absence makes the heart grow ___.", answer: "fonder", source: "Common Saying" },
+    { category: "Everyday Saying", phrase: "Better late than ___.", answer: "never", wrong: ["early", "sorry"], source: "Common Saying" },
+    { category: "Everyday Saying", phrase: "A picture is worth a thousand ___.", answer: "words", wrong: ["dollars", "stories"], source: "Common Saying" },
+    { category: "Everyday Saying", phrase: "The grass is always greener on the other ___.", answer: "side", wrong: ["hill", "lawn"], source: "Common Saying" },
+    { category: "Everyday Saying", phrase: "Every dog has its ___.", answer: "day", wrong: ["bone", "turn"], source: "Common Saying" },
+    { category: "Everyday Saying", phrase: "Let sleeping dogs ___.", answer: "lie", wrong: ["rest", "stay"], source: "Common Saying" },
+    { category: "Everyday Saying", phrase: "The best things in life are ___.", answer: "free", wrong: ["rare", "simple"], source: "Common Saying" },
+    { category: "Everyday Saying", phrase: "Where there's a will, there's a ___.", answer: "way", wrong: ["chance", "path"], source: "Common Saying" },
+    { category: "Everyday Saying", phrase: "You can't judge a book by its ___.", answer: "cover", wrong: ["title", "pages"], source: "Common Saying" },
+    { category: "Everyday Saying", phrase: "When it rains, it ___.", answer: "pours", wrong: ["floods", "storms"], source: "Common Saying" },
+    { category: "Everyday Saying", phrase: "Beggars can't be ___.", answer: "choosers", wrong: ["picky", "winners"], source: "Common Saying" },
+    { category: "Everyday Saying", phrase: "An ounce of prevention is worth a pound of ___.", answer: "cure", wrong: ["gold", "medicine"], source: "Benjamin Franklin" },
+    { category: "Everyday Saying", phrase: "Absence makes the heart grow ___.", answer: "fonder", wrong: ["stronger", "weaker"], source: "Common Saying" },
   ],
   "Nature & Weather": [
-    { category: "Nature", phrase: "April showers bring May ___.", answer: "flowers", source: "Common Saying" },
-    { category: "Nature", phrase: "Red sky at night, sailor's ___.", answer: "delight", source: "Weather Proverb" },
-    { category: "Nature", phrase: "Make hay while the ___ shines.", answer: "sun", source: "Common Proverb" },
-    { category: "Nature", phrase: "Every rose has its ___.", answer: "thorn", source: "Common Saying" },
-    { category: "Nature", phrase: "Slow and steady wins the ___.", answer: "race", source: "Aesop's Fable" },
-    { category: "Nature", phrase: "A rolling stone gathers no ___.", answer: "moss", source: "Common Proverb" },
-    { category: "Nature", phrase: "Still waters run ___.", answer: "deep", source: "Common Proverb" },
-    { category: "Nature", phrase: "You reap what you ___.", answer: "sow", source: "Common Saying" },
+    { category: "Nature", phrase: "April showers bring May ___.", answer: "flowers", wrong: ["sunshine", "rainbows"], source: "Common Saying" },
+    { category: "Nature", phrase: "Red sky at night, sailor's ___.", answer: "delight", wrong: ["warning", "dream"], source: "Weather Proverb" },
+    { category: "Nature", phrase: "Make hay while the ___ shines.", answer: "sun", wrong: ["moon", "light"], source: "Common Proverb" },
+    { category: "Nature", phrase: "Every rose has its ___.", answer: "thorn", wrong: ["petal", "beauty"], source: "Common Saying" },
+    { category: "Nature", phrase: "Slow and steady wins the ___.", answer: "race", wrong: ["game", "prize"], source: "Aesop's Fable" },
+    { category: "Nature", phrase: "A rolling stone gathers no ___.", answer: "moss", wrong: ["dust", "speed"], source: "Common Proverb" },
+    { category: "Nature", phrase: "Still waters run ___.", answer: "deep", wrong: ["cold", "quiet"], source: "Common Proverb" },
+    { category: "Nature", phrase: "You reap what you ___.", answer: "sow", wrong: ["grow", "plant"], source: "Common Saying" },
   ],
   "Nursery Rhymes & Songs": [
-    { category: "Nursery Rhyme", phrase: "Twinkle twinkle little ___.", answer: "star", source: "Nursery Rhyme" },
-    { category: "Nursery Rhyme", phrase: "Jack and Jill went up the ___.", answer: "hill", source: "Nursery Rhyme" },
-    { category: "Nursery Rhyme", phrase: "Mary had a little ___.", answer: "lamb", source: "Nursery Rhyme" },
-    { category: "Nursery Rhyme", phrase: "Humpty Dumpty sat on a ___.", answer: "wall", source: "Nursery Rhyme" },
-    { category: "Nursery Rhyme", phrase: "Little Bo Peep has lost her ___.", answer: "sheep", source: "Nursery Rhyme" },
-    { category: "Nursery Rhyme", phrase: "Hey diddle diddle, the cat and the ___.", answer: "fiddle", source: "Nursery Rhyme" },
-    { category: "Nursery Rhyme", phrase: "Row row row your ___.", answer: "boat", source: "Nursery Rhyme" },
-    { category: "Nursery Rhyme", phrase: "Jack be nimble, Jack be ___.", answer: "quick", source: "Nursery Rhyme" },
-    { category: "Nursery Rhyme", phrase: "Peter Peter pumpkin ___.", answer: "eater", source: "Nursery Rhyme" },
+    { category: "Nursery Rhyme", phrase: "Twinkle twinkle little ___.", answer: "star", wrong: ["light", "moon"], source: "Nursery Rhyme" },
+    { category: "Nursery Rhyme", phrase: "Jack and Jill went up the ___.", answer: "hill", wrong: ["mountain", "road"], source: "Nursery Rhyme" },
+    { category: "Nursery Rhyme", phrase: "Mary had a little ___.", answer: "lamb", wrong: ["puppy", "kitten"], source: "Nursery Rhyme" },
+    { category: "Nursery Rhyme", phrase: "Humpty Dumpty sat on a ___.", answer: "wall", wrong: ["fence", "bridge"], source: "Nursery Rhyme" },
+    { category: "Nursery Rhyme", phrase: "Little Bo Peep has lost her ___.", answer: "sheep", wrong: ["lambs", "bonnet"], source: "Nursery Rhyme" },
+    { category: "Nursery Rhyme", phrase: "Hey diddle diddle, the cat and the ___.", answer: "fiddle", wrong: ["riddle", "middle"], source: "Nursery Rhyme" },
+    { category: "Nursery Rhyme", phrase: "Row row row your ___.", answer: "boat", wrong: ["raft", "ship"], source: "Nursery Rhyme" },
+    { category: "Nursery Rhyme", phrase: "Jack be nimble, Jack be ___.", answer: "quick", wrong: ["brave", "smart"], source: "Nursery Rhyme" },
+    { category: "Nursery Rhyme", phrase: "Peter Peter pumpkin ___.", answer: "eater", wrong: ["picker", "grower"], source: "Nursery Rhyme" },
   ],
   "Holiday Phrases": [
-    { category: "Holiday", phrase: "Jingle bells, jingle bells, jingle all the ___.", answer: "way", source: "Christmas Song" },
-    { category: "Holiday", phrase: "Over the river and through the woods to ___ house we go.", answer: "grandmother's", source: "Thanksgiving Song" },
-    { category: "Holiday", phrase: "Rudolph the red-nosed ___.", answer: "reindeer", source: "Christmas Song" },
-    { category: "Holiday", phrase: "Frosty the ___.", answer: "snowman", source: "Christmas Song" },
-    { category: "Holiday", phrase: "Here comes Peter ___.", answer: "Cottontail", source: "Easter Song" },
-    { category: "Holiday", phrase: "Chestnuts roasting on an open ___.", answer: "fire", source: "Christmas Song" },
-    { category: "Holiday", phrase: "Deck the ___ with boughs of holly.", answer: "halls", source: "Christmas Carol" },
-    { category: "Holiday", phrase: "Oh say can you see by the dawn's early ___.", answer: "light", source: "Star-Spangled Banner" },
+    { category: "Holiday", phrase: "Jingle bells, jingle bells, jingle all the ___.", answer: "way", wrong: ["day", "night"], source: "Christmas Song" },
+    { category: "Holiday", phrase: "Over the river and through the woods to ___ house we go.", answer: "grandmother's", wrong: ["grandpa's", "auntie's"], source: "Thanksgiving Song" },
+    { category: "Holiday", phrase: "Rudolph the red-nosed ___.", answer: "reindeer", wrong: ["snowman", "elf"], source: "Christmas Song" },
+    { category: "Holiday", phrase: "Frosty the ___.", answer: "snowman", wrong: ["reindeer", "penguin"], source: "Christmas Song" },
+    { category: "Holiday", phrase: "Here comes Peter ___.", answer: "Cottontail", wrong: ["Rabbit", "Bunny"], source: "Easter Song" },
+    { category: "Holiday", phrase: "Chestnuts roasting on an open ___.", answer: "fire", wrong: ["flame", "stove"], source: "Christmas Song" },
+    { category: "Holiday", phrase: "Deck the ___ with boughs of holly.", answer: "halls", wrong: ["walls", "trees"], source: "Christmas Carol" },
+    { category: "Holiday", phrase: "Oh say can you see by the dawn's early ___.", answer: "light", wrong: ["glow", "sun"], source: "Star-Spangled Banner" },
   ],
   "Bible & Hymns": [
-    { category: "Bible", phrase: "The Lord is my ___.", answer: "shepherd", source: "Psalm 23" },
-    { category: "Bible", phrase: "Do unto others as you would have them do unto ___.", answer: "you", source: "The Golden Rule" },
-    { category: "Bible", phrase: "Faith, hope, and love, but the greatest of these is ___.", answer: "love", source: "1 Corinthians 13" },
-    { category: "Hymn", phrase: "Amazing grace, how sweet the ___.", answer: "sound", source: "Amazing Grace" },
-    { category: "Bible", phrase: "For God so loved the ___.", answer: "world", source: "John 3:16" },
-    { category: "Hymn", phrase: "He's got the whole world in His ___.", answer: "hands", source: "Spiritual" },
-    { category: "Bible", phrase: "Love thy ___ as thyself.", answer: "neighbor", source: "Matthew 22:39" },
-    { category: "Bible", phrase: "Ask and you shall ___.", answer: "receive", source: "Matthew 7:7" },
+    { category: "Bible", phrase: "The Lord is my ___.", answer: "shepherd", wrong: ["savior", "guardian"], source: "Psalm 23" },
+    { category: "Bible", phrase: "Do unto others as you would have them do unto ___.", answer: "you", wrong: ["them", "all"], source: "The Golden Rule" },
+    { category: "Bible", phrase: "Faith, hope, and love, but the greatest of these is ___.", answer: "love", wrong: ["faith", "hope"], source: "1 Corinthians 13" },
+    { category: "Hymn", phrase: "Amazing grace, how sweet the ___.", answer: "sound", wrong: ["song", "light"], source: "Amazing Grace" },
+    { category: "Bible", phrase: "For God so loved the ___.", answer: "world", wrong: ["people", "earth"], source: "John 3:16" },
+    { category: "Hymn", phrase: "He's got the whole world in His ___.", answer: "hands", wrong: ["arms", "heart"], source: "Spiritual" },
+    { category: "Bible", phrase: "Love thy ___ as thyself.", answer: "neighbor", wrong: ["brother", "friend"], source: "Matthew 22:39" },
+    { category: "Bible", phrase: "Ask and you shall ___.", answer: "receive", wrong: ["find", "know"], source: "Matthew 7:7" },
   ],
   "Classic Movies": [
-    { category: "Movie Quote", phrase: "There's no place like ___.", answer: "home", source: "The Wizard of Oz" },
-    { category: "Movie Quote", phrase: "Here's looking at you, ___.", answer: "kid", source: "Casablanca" },
-    { category: "Movie Quote", phrase: "Life is like a box of ___.", answer: "chocolates", source: "Forrest Gump" },
-    { category: "Movie Quote", phrase: "May the ___ be with you.", answer: "Force", source: "Star Wars" },
-    { category: "Movie Quote", phrase: "You're gonna need a bigger ___.", answer: "boat", source: "Jaws" },
-    { category: "Movie Quote", phrase: "I'll be ___.", answer: "back", source: "The Terminator" },
-    { category: "Movie Quote", phrase: "ET phone ___.", answer: "home", source: "E.T." },
-    { category: "Movie Quote", phrase: "Just keep ___.", answer: "swimming", source: "Finding Nemo" },
+    { category: "Movie Quote", phrase: "There's no place like ___.", answer: "home", wrong: ["heaven", "this"], source: "The Wizard of Oz" },
+    { category: "Movie Quote", phrase: "Here's looking at you, ___.", answer: "kid", wrong: ["pal", "dear"], source: "Casablanca" },
+    { category: "Movie Quote", phrase: "Life is like a box of ___.", answer: "chocolates", wrong: ["surprises", "crayons"], source: "Forrest Gump" },
+    { category: "Movie Quote", phrase: "May the ___ be with you.", answer: "Force", wrong: ["Light", "Power"], source: "Star Wars" },
+    { category: "Movie Quote", phrase: "You're gonna need a bigger ___.", answer: "boat", wrong: ["net", "cage"], source: "Jaws" },
+    { category: "Movie Quote", phrase: "I'll be ___.", answer: "back", wrong: ["there", "ready"], source: "The Terminator" },
+    { category: "Movie Quote", phrase: "ET phone ___.", answer: "home", wrong: ["Earth", "help"], source: "E.T." },
+    { category: "Movie Quote", phrase: "Just keep ___.", answer: "swimming", wrong: ["going", "trying"], source: "Finding Nemo" },
   ],
 };
 
@@ -1431,47 +1497,103 @@ function launchFITB() {
 
 function startFITB() { showFitbPicker(); }
 
+let fitbAnswered = false;
+let fitbCorrectAnswer = '';
+
 function renderFitbPhrase() {
   const item = fitbList[fitbIndex];
   fitbRevealed = false;
+  fitbAnswered = false;
 
   document.getElementById('fitb-category').textContent = item.category || '';
   document.getElementById('fitb-source').textContent = item.source ? `— ${item.source}` : '';
   document.getElementById('fitb-progress').textContent =
     `Phrase ${fitbIndex + 1} of ${fitbList.length}`;
 
+  // Build phrase with blank
   const phraseEl = document.getElementById('fitb-phrase');
-  const answers = Array.isArray(item.answer) ? item.answer : [item.answer];
+  const answer = Array.isArray(item.answer) ? item.answer[0] : item.answer;
+  fitbCorrectAnswer = answer;
   let html = escapeHtml(item.phrase);
 
-  answers.forEach(ans => {
-    if (html.includes('___')) {
-      html = html.replace('___',
-        `<span class="fitb-blank" data-answer="${escapeHtml(ans)}">&nbsp;</span>`);
+  if (html.includes('___')) {
+    html = html.replace('___',
+      `<span class="fitb-blank" data-answer="${escapeHtml(answer)}">&nbsp;</span>`);
+  }
+  phraseEl.innerHTML = html;
+
+  // Build multiple choice buttons
+  const choicesEl = document.getElementById('fitb-choices');
+  choicesEl.innerHTML = '';
+
+  const wrongAnswers = item.wrong || ['???', '???'];
+  const allChoices = shuffle([answer, ...wrongAnswers]);
+  const labels = ['A', 'B', 'C'];
+
+  allChoices.forEach((choice, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'mc-btn';
+    btn.dataset.answer = choice;
+    btn.dataset.key = labels[i];
+    btn.innerHTML = `<span class="mc-label">${labels[i]}.</span> ${escapeHtml(choice)}`;
+    btn.addEventListener('click', () => selectFitbAnswer(btn));
+    choicesEl.appendChild(btn);
+  });
+}
+
+function selectFitbAnswer(btn) {
+  if (fitbAnswered) return;
+  fitbAnswered = true;
+
+  const selected = btn.dataset.answer;
+  const isCorrect = selected.toLowerCase() === fitbCorrectAnswer.toLowerCase();
+
+  // Mark all buttons
+  document.querySelectorAll('.mc-btn').forEach(b => {
+    b.classList.add('disabled');
+    if (b.dataset.answer.toLowerCase() === fitbCorrectAnswer.toLowerCase()) {
+      b.classList.add('correct');
     }
   });
 
-  phraseEl.innerHTML = html;
+  if (isCorrect) {
+    btn.classList.add('correct');
+    fitbScore++;
+    updateFitbScoreDisplay();
+    playCorrectChime();
+    showPuzzleCompleteMsg('That\'s it!');
+    launchConfetti(30);
+  } else {
+    btn.classList.add('wrong');
+    playWrongBuzz();
+  }
+
+  // Reveal the blank
+  document.querySelectorAll('.fitb-blank').forEach(blank => {
+    blank.textContent = blank.dataset.answer;
+    blank.classList.add('revealed');
+  });
 }
+
+// Keyboard support for FITB: press A, B, or C
+document.addEventListener('keydown', (e) => {
+  if (!document.getElementById('fitb-screen').classList.contains('active')) return;
+  if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+  if (document.getElementById('fitb-modal').classList.contains('active')) return;
+  if (fitbAnswered) return;
+
+  const key = e.key.toUpperCase();
+  if (!['A', 'B', 'C'].includes(key)) return;
+
+  e.preventDefault();
+  const btn = document.querySelector(`.mc-btn[data-key="${key}"]`);
+  if (btn) selectFitbAnswer(btn);
+});
 
 function escapeHtml(str) {
   const div = document.createElement('div');
   div.textContent = str;
   return div.innerHTML;
-}
-
-function fitbReveal() {
-  if (fitbRevealed) return;
-  fitbRevealed = true;
-  document.querySelectorAll('.fitb-blank').forEach(blank => {
-    blank.textContent = blank.dataset.answer;
-    blank.classList.add('revealed');
-  });
-  fitbScore++;
-  updateFitbScoreDisplay();
-  playRevealFanfare();
-  showPuzzleCompleteMsg('That\'s it!');
-  launchConfetti(30);
 }
 
 function fitbNext() {
@@ -1508,6 +1630,7 @@ function openFitbCustom() {
   document.getElementById('fitb-custom-cat').value = '';
   document.getElementById('fitb-custom-phrase').value = '';
   document.getElementById('fitb-custom-blank').value = '';
+  document.getElementById('fitb-custom-wrong').value = '';
   document.getElementById('fitb-custom-source').value = '';
   document.getElementById('fitb-modal').classList.add('active');
 }
@@ -1532,20 +1655,24 @@ function addWofCustom() {
 function addFitbCustom() {
   const cat = document.getElementById('fitb-custom-cat').value.trim() || '';
   const phrase = document.getElementById('fitb-custom-phrase').value.trim();
-  const blankWords = document.getElementById('fitb-custom-blank').value.trim();
+  const blankWord = document.getElementById('fitb-custom-blank').value.trim();
+  const wrongStr = document.getElementById('fitb-custom-wrong').value.trim();
   const source = document.getElementById('fitb-custom-source').value.trim();
-  if (!phrase || !blankWords) return;
+  if (!phrase || !blankWord || !wrongStr) return;
 
-  let displayPhrase = phrase;
-  const answers = blankWords.split(/\s+/);
-  answers.forEach(word => {
-    displayPhrase = displayPhrase.replace(new RegExp(word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'), '___');
-  });
+  // Parse wrong answers from comma-separated string
+  const wrongAnswers = wrongStr.split(',').map(s => s.trim()).filter(s => s).slice(0, 2);
+  if (wrongAnswers.length < 2) return; // Need exactly 2 wrong answers
+
+  let displayPhrase = phrase.replace(
+    new RegExp(blankWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'), '___'
+  );
 
   const newItem = {
     category: cat,
     phrase: displayPhrase,
-    answer: answers,
+    answer: blankWord,
+    wrong: wrongAnswers,
     source: source
   };
 
