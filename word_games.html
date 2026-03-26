@@ -176,6 +176,84 @@
     color: var(--text-dim);
   }
 
+  /* ===== SOUND TOGGLE ===== */
+  .sound-btn {
+    background: transparent;
+    border: 2px solid var(--text-dim);
+    color: var(--text-dim);
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .sound-btn:hover { border-color: var(--text); color: var(--text); }
+  .sound-btn.muted { opacity: 0.5; }
+
+  /* ===== CATEGORY PICKER ===== */
+  .picker-screen {
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    padding: 40px;
+    text-align: center;
+  }
+
+  .picker-screen h2 {
+    font-size: 48px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-warm));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .picker-subtitle {
+    font-size: 24px;
+    color: var(--text-dim);
+  }
+
+  .pack-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    max-width: 900px;
+  }
+
+  .pack-card {
+    padding: 18px 28px;
+    border-radius: 14px;
+    font-size: 22px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 3px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.06);
+    color: var(--text-dim);
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .pack-card:hover { border-color: rgba(255,255,255,0.3); }
+
+  .pack-card.selected {
+    border-color: var(--accent-green);
+    background: rgba(92,184,92,0.15);
+    color: var(--text);
+  }
+
+  .pack-card .pack-count {
+    font-size: 16px;
+    font-weight: 400;
+    opacity: 0.7;
+  }
+
+  .picker-buttons { display: flex; gap: 16px; margin-top: 10px; }
+
   /* ===== WHEEL OF FORTUNE ===== */
   #wof-screen { background: linear-gradient(180deg, #1a2744 0%, #1a1a2e 100%); }
 
@@ -218,9 +296,9 @@
     background: var(--tile-revealed);
     color: white;
     border-color: transparent;
-    animation: tileReveal 0.4s ease;
+    animation: tileReveal 0.5s ease;
+    box-shadow: 0 0 16px rgba(74,144,217,0.5);
   }
-
 
   .used-letters {
     display: flex;
@@ -244,17 +322,31 @@
   .used-letter.hit {
     background: var(--accent-green);
     color: white;
+    animation: hitPulse 0.4s ease;
   }
 
   .used-letter.miss {
     background: rgba(255,255,255,0.1);
     color: var(--text-dim);
     text-decoration: line-through;
+    animation: missPulse 0.3s ease;
   }
 
   @keyframes tileReveal {
-    0% { transform: rotateX(90deg); }
-    100% { transform: rotateX(0deg); }
+    0% { transform: rotateX(90deg) scale(0.8); opacity: 0.5; }
+    50% { transform: rotateX(-10deg) scale(1.05); }
+    100% { transform: rotateX(0deg) scale(1); opacity: 1; }
+  }
+
+  @keyframes hitPulse {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes missPulse {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
   }
 
   .wof-line {
@@ -288,12 +380,13 @@
   .fitb-blank.revealed {
     border-bottom-color: var(--accent-green);
     color: var(--accent-green);
-    animation: blankReveal 0.5s ease;
+    animation: blankReveal 0.6s ease;
   }
 
   @keyframes blankReveal {
-    0% { opacity: 0; transform: translateY(10px); }
-    100% { opacity: 1; transform: translateY(0); }
+    0% { opacity: 0; transform: translateY(10px) scale(0.9); }
+    60% { transform: translateY(-5px) scale(1.05); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
   }
 
   .fitb-source {
@@ -400,6 +493,7 @@
     font-size: 56px;
     font-weight: 700;
     text-align: center;
+    animation: endBounce 0.6s ease;
   }
 
   .end-score {
@@ -413,6 +507,19 @@
     font-weight: 800;
     text-align: center;
     margin: 10px 0;
+    animation: gradeReveal 0.8s ease;
+  }
+
+  @keyframes endBounce {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes gradeReveal {
+    0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+    60% { transform: scale(1.2) rotate(5deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
   }
 
   .grade-aplus { color: #ffd700; }
@@ -421,23 +528,102 @@
   .grade-c { color: #e07c4f; }
   .grade-d { color: #d9534f; }
   .grade-f { color: #c0392b; }
+
+  /* ===== CONFETTI ===== */
+  .confetti-container {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 200;
+    overflow: hidden;
+  }
+
+  .confetti-piece {
+    position: absolute;
+    top: -20px;
+    width: 12px;
+    height: 12px;
+    animation: confettiFall linear forwards;
+  }
+
+  @keyframes confettiFall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* ===== PUZZLE COMPLETE FLASH ===== */
+  .puzzle-complete-msg {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    font-size: 64px;
+    font-weight: 800;
+    color: #ffd700;
+    text-shadow: 0 4px 20px rgba(255,215,0,0.5);
+    z-index: 150;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .puzzle-complete-msg.show {
+    animation: puzzleCompleteAnim 1.5s ease forwards;
+  }
+
+  @keyframes puzzleCompleteAnim {
+    0% { transform: translate(-50%, -50%) scale(0) rotate(-10deg); opacity: 0; }
+    30% { transform: translate(-50%, -50%) scale(1.2) rotate(3deg); opacity: 1; }
+    60% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+  }
 </style>
 </head>
 <body>
+
+<!-- ===== CONFETTI CONTAINER ===== -->
+<div class="confetti-container" id="confetti-container"></div>
+
+<!-- ===== PUZZLE COMPLETE MESSAGE ===== -->
+<div class="puzzle-complete-msg" id="puzzle-complete-msg"></div>
 
 <!-- ===== HOME SCREEN ===== -->
 <div id="home" class="screen active">
   <h1>Word Games</h1>
   <p class="subtitle">Interactive Group Activities</p>
   <div class="game-buttons">
-    <button class="game-btn wof" onclick="startWOF()">
+    <button class="game-btn wof" onclick="showWofPicker()">
       <span class="icon">&#x1F3B0;</span>
       <span class="label">Wheel of Fortune</span>
     </button>
-    <button class="game-btn fitb" onclick="startFITB()">
+    <button class="game-btn fitb" onclick="showFitbPicker()">
       <span class="icon">&#x270D;&#xFE0F;</span>
       <span class="label">Fill in the Blank</span>
     </button>
+  </div>
+</div>
+
+<!-- ===== WOF CATEGORY PICKER ===== -->
+<div id="wof-picker" class="screen picker-screen">
+  <h2>Wheel of Fortune</h2>
+  <p class="picker-subtitle">Choose your puzzle packs</p>
+  <div class="pack-grid" id="wof-pack-grid"></div>
+  <div class="picker-buttons">
+    <button class="btn btn-outline" onclick="toggleAllPacks('wof')">Select All</button>
+    <button class="btn btn-blue" onclick="launchWOF()">Start Game</button>
+    <button class="btn btn-back" onclick="goHome()">Back</button>
+  </div>
+</div>
+
+<!-- ===== FITB CATEGORY PICKER ===== -->
+<div id="fitb-picker" class="screen picker-screen">
+  <h2>Fill in the Blank</h2>
+  <p class="picker-subtitle">Choose your phrase packs</p>
+  <div class="pack-grid" id="fitb-pack-grid"></div>
+  <div class="picker-buttons">
+    <button class="btn btn-outline" onclick="toggleAllPacks('fitb')">Select All</button>
+    <button class="btn btn-warm" onclick="launchFITB()">Start Game</button>
+    <button class="btn btn-back" onclick="goHome()">Back</button>
   </div>
 </div>
 
@@ -448,6 +634,7 @@
     <div class="header-controls">
       <div id="wof-puzzle-pts" class="score-display">Puzzle Points: 26</div>
       <div id="wof-total-pts" class="score-display">Total: 0</div>
+      <button class="sound-btn" id="sound-toggle-wof" onclick="toggleSound(this)" title="Toggle Sound">&#x1F50A;</button>
       <button class="btn btn-outline" onclick="openWofCustom()">+ Custom</button>
       <button class="btn btn-back" onclick="goHome()">Menu</button>
     </div>
@@ -476,7 +663,7 @@
     <div class="end-score" id="wof-end-points"></div>
     <div class="end-grade" id="wof-end-grade"></div>
     <div style="display:flex; gap:20px; margin-top:20px;">
-      <button class="btn btn-blue" onclick="startWOF()">Play Again</button>
+      <button class="btn btn-blue" onclick="showWofPicker()">Play Again</button>
       <button class="btn btn-back" onclick="goHome()">Menu</button>
     </div>
   </div>
@@ -492,6 +679,7 @@
         <div id="fitb-score-toggle" class="toggle-switch"></div>
         Score
       </label>
+      <button class="sound-btn" id="sound-toggle-fitb" onclick="toggleSound(this)" title="Toggle Sound">&#x1F50A;</button>
       <button class="btn btn-outline" onclick="openFitbCustom()">+ Custom</button>
       <button class="btn btn-back" onclick="goHome()">Menu</button>
     </div>
@@ -548,117 +736,373 @@
 
 <script>
 // ============================================================
-//  PRE-LOADED CONTENT
+//  SOUND EFFECTS (Web Audio API — no external files)
 // ============================================================
 
-const wofPuzzles = [
-  // Common Sayings
-  { category: "Common Saying", phrase: "ACTIONS SPEAK LOUDER THAN WORDS" },
-  { category: "Common Saying", phrase: "EVERY CLOUD HAS A SILVER LINING" },
-  { category: "Common Saying", phrase: "THE EARLY BIRD CATCHES THE WORM" },
-  { category: "Common Saying", phrase: "HOME SWEET HOME" },
-  { category: "Common Saying", phrase: "PRACTICE MAKES PERFECT" },
-  { category: "Common Saying", phrase: "LAUGHTER IS THE BEST MEDICINE" },
-  { category: "Common Saying", phrase: "A PENNY SAVED IS A PENNY EARNED" },
-  { category: "Common Saying", phrase: "YOU CANT TEACH AN OLD DOG NEW TRICKS" },
-  { category: "Common Saying", phrase: "WHEN LIFE GIVES YOU LEMONS MAKE LEMONADE" },
-  { category: "Common Saying", phrase: "ALL THAT GLITTERS IS NOT GOLD" },
+let soundEnabled = true;
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
 
-  // Food & Drink
-  { category: "Food", phrase: "APPLE PIE" },
-  { category: "Food", phrase: "CHOCOLATE CHIP COOKIES" },
-  { category: "Food", phrase: "MASHED POTATOES AND GRAVY" },
-  { category: "Food", phrase: "PEANUT BUTTER AND JELLY" },
-  { category: "Food", phrase: "STRAWBERRY SHORTCAKE" },
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new AudioCtx();
+  return audioCtx;
+}
 
-  // Places
-  { category: "Place", phrase: "GRAND CANYON" },
-  { category: "Place", phrase: "STATUE OF LIBERTY" },
-  { category: "Place", phrase: "GOLDEN GATE BRIDGE" },
-  { category: "Place", phrase: "MOUNT RUSHMORE" },
-  { category: "Place", phrase: "NIAGARA FALLS" },
+function toggleSound(btn) {
+  soundEnabled = !soundEnabled;
+  document.querySelectorAll('.sound-btn').forEach(b => {
+    b.innerHTML = soundEnabled ? '&#x1F50A;' : '&#x1F507;';
+    b.classList.toggle('muted', !soundEnabled);
+  });
+  localStorage.setItem('wordgames-sound', soundEnabled ? 'on' : 'off');
+}
 
-  // Animals
-  { category: "Animal", phrase: "BALD EAGLE" },
-  { category: "Animal", phrase: "GOLDEN RETRIEVER" },
-  { category: "Animal", phrase: "MONARCH BUTTERFLY" },
-  { category: "Animal", phrase: "HUMMINGBIRD" },
-  { category: "Animal", phrase: "SEA TURTLE" },
+// Load saved preference
+if (localStorage.getItem('wordgames-sound') === 'off') {
+  soundEnabled = false;
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.sound-btn').forEach(b => {
+      b.innerHTML = '&#x1F507;';
+      b.classList.add('muted');
+    });
+  });
+}
 
-  // Around the House
-  { category: "Around the House", phrase: "ROCKING CHAIR" },
-  { category: "Around the House", phrase: "KITCHEN TABLE" },
-  { category: "Around the House", phrase: "FRONT PORCH" },
-  { category: "Around the House", phrase: "FLOWER GARDEN" },
-  { category: "Around the House", phrase: "PICTURE FRAME" },
+function playTone(freq, duration, type = 'sine', vol = 0.15) {
+  if (!soundEnabled) return;
+  const ctx = getAudioCtx();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, ctx.currentTime);
+  gain.gain.setValueAtTime(vol, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(ctx.currentTime);
+  osc.stop(ctx.currentTime + duration);
+}
 
-  // Fun Phrases
-  { category: "Fun Phrase", phrase: "BREAK A LEG" },
-  { category: "Fun Phrase", phrase: "PIECE OF CAKE" },
-  { category: "Fun Phrase", phrase: "UNDER THE WEATHER" },
-  { category: "Fun Phrase", phrase: "RAINING CATS AND DOGS" },
-  { category: "Fun Phrase", phrase: "EASY AS PIE" },
-];
+function playCorrectChime() {
+  playTone(523, 0.12, 'sine', 0.12);
+  setTimeout(() => playTone(659, 0.12, 'sine', 0.12), 80);
+  setTimeout(() => playTone(784, 0.2, 'sine', 0.10), 160);
+}
 
-const fitbPhrases = [
-  // Proverbs
-  { category: "Proverb", phrase: "A stitch in time saves ___.", answer: "nine", source: "Common Proverb" },
-  { category: "Proverb", phrase: "An apple a day keeps the ___ away.", answer: "doctor", source: "Common Proverb" },
-  { category: "Proverb", phrase: "The pen is mightier than the ___.", answer: "sword", source: "Common Proverb" },
-  { category: "Proverb", phrase: "A bird in the hand is worth two in the ___.", answer: "bush", source: "Common Proverb" },
-  { category: "Proverb", phrase: "Don't count your ___ before they hatch.", answer: "chickens", source: "Common Proverb" },
-  { category: "Proverb", phrase: "You can lead a horse to water but you can't make it ___.", answer: "drink", source: "Common Proverb" },
-  { category: "Proverb", phrase: "Curiosity killed the ___.", answer: "cat", source: "Common Proverb" },
-  { category: "Proverb", phrase: "Rome wasn't built in a ___.", answer: "day", source: "Common Proverb" },
-  { category: "Proverb", phrase: "When in Rome, do as the ___ do.", answer: "Romans", source: "Common Proverb" },
-  { category: "Proverb", phrase: "Two heads are better than ___.", answer: "one", source: "Common Proverb" },
+function playWrongBuzz() {
+  playTone(180, 0.25, 'square', 0.06);
+}
 
-  // Famous Phrases
-  { category: "Famous Phrase", phrase: "That's one small step for man, one giant ___ for mankind.", answer: "leap", source: "Neil Armstrong" },
-  { category: "Famous Phrase", phrase: "To be or not to be, that is the ___.", answer: "question", source: "William Shakespeare" },
-  { category: "Famous Phrase", phrase: "I think, therefore I ___.", answer: "am", source: "Rene Descartes" },
-  { category: "Famous Phrase", phrase: "The only thing we have to fear is fear ___.", answer: "itself", source: "Franklin D. Roosevelt" },
-  { category: "Famous Phrase", phrase: "Ask not what your country can do for you, ask what you can do for your ___.", answer: "country", source: "John F. Kennedy" },
+function playRevealFanfare() {
+  const notes = [523, 587, 659, 784, 880];
+  notes.forEach((n, i) => {
+    setTimeout(() => playTone(n, 0.15, 'sine', 0.10), i * 80);
+  });
+}
 
-  // Everyday Sayings
-  { category: "Everyday Saying", phrase: "Better late than ___.", answer: "never", source: "Common Saying" },
-  { category: "Everyday Saying", phrase: "A picture is worth a thousand ___.", answer: "words", source: "Common Saying" },
-  { category: "Everyday Saying", phrase: "The grass is always greener on the other ___.", answer: "side", source: "Common Saying" },
-  { category: "Everyday Saying", phrase: "Don't put all your eggs in one ___.", answer: "basket", source: "Common Saying" },
-  { category: "Everyday Saying", phrase: "Every dog has its ___.", answer: "day", source: "Common Saying" },
-  { category: "Everyday Saying", phrase: "If the shoe fits, ___ it.", answer: "wear", source: "Common Saying" },
-  { category: "Everyday Saying", phrase: "Let sleeping dogs ___.", answer: "lie", source: "Common Saying" },
-  { category: "Everyday Saying", phrase: "The best things in life are ___.", answer: "free", source: "Common Saying" },
-  { category: "Everyday Saying", phrase: "Where there's a will, there's a ___.", answer: "way", source: "Common Saying" },
-  { category: "Everyday Saying", phrase: "You can't judge a book by its ___.", answer: "cover", source: "Common Saying" },
+function playCelebration() {
+  const melody = [523, 659, 784, 1047, 784, 1047];
+  melody.forEach((n, i) => {
+    setTimeout(() => playTone(n, 0.2, 'sine', 0.10), i * 120);
+  });
+}
 
-  // Nature & Weather
-  { category: "Nature", phrase: "April showers bring May ___.", answer: "flowers", source: "Common Saying" },
-  { category: "Nature", phrase: "Red sky at night, sailor's ___.", answer: "delight", source: "Weather Proverb" },
-  { category: "Nature", phrase: "Make hay while the ___ shines.", answer: "sun", source: "Common Proverb" },
-  { category: "Nature", phrase: "Every rose has its ___.", answer: "thorn", source: "Common Saying" },
-  { category: "Nature", phrase: "Slow and steady wins the ___.", answer: "race", source: "Aesop's Fable" },
+function playClick() {
+  playTone(800, 0.05, 'sine', 0.06);
+}
 
-  // Holidays & Traditions
-  { category: "Holiday", phrase: "Jingle bells, jingle bells, jingle all the ___.", answer: "way", source: "Christmas Song" },
-  { category: "Holiday", phrase: "Over the river and through the woods to ___ house we go.", answer: "grandmother's", source: "Thanksgiving Song" },
-  { category: "Holiday", phrase: "Twinkle twinkle little ___.", answer: "star", source: "Nursery Rhyme" },
-  { category: "Holiday", phrase: "Jack and Jill went up the ___.", answer: "hill", source: "Nursery Rhyme" },
-  { category: "Holiday", phrase: "Mary had a little ___.", answer: "lamb", source: "Nursery Rhyme" },
-];
+// ============================================================
+//  CONFETTI SYSTEM
+// ============================================================
+
+function launchConfetti(count = 60) {
+  const container = document.getElementById('confetti-container');
+  const colors = ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ff9ff3', '#54a0ff', '#5cb85c'];
+
+  for (let i = 0; i < count; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + '%';
+    piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.width = (Math.random() * 10 + 6) + 'px';
+    piece.style.height = (Math.random() * 10 + 6) + 'px';
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    piece.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+    piece.style.animationDelay = (Math.random() * 0.5) + 's';
+    container.appendChild(piece);
+  }
+
+  setTimeout(() => { container.innerHTML = ''; }, 4000);
+}
+
+function showPuzzleCompleteMsg(text = 'Nice!') {
+  const el = document.getElementById('puzzle-complete-msg');
+  el.textContent = text;
+  el.classList.remove('show');
+  void el.offsetWidth; // force reflow
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 1600);
+}
+
+// ============================================================
+//  PRE-LOADED CONTENT — WHEEL OF FORTUNE
+// ============================================================
+
+const wofPacks = {
+  "Common Sayings": [
+    { category: "Common Saying", phrase: "ACTIONS SPEAK LOUDER THAN WORDS" },
+    { category: "Common Saying", phrase: "EVERY CLOUD HAS A SILVER LINING" },
+    { category: "Common Saying", phrase: "THE EARLY BIRD CATCHES THE WORM" },
+    { category: "Common Saying", phrase: "HOME SWEET HOME" },
+    { category: "Common Saying", phrase: "PRACTICE MAKES PERFECT" },
+    { category: "Common Saying", phrase: "LAUGHTER IS THE BEST MEDICINE" },
+    { category: "Common Saying", phrase: "A PENNY SAVED IS A PENNY EARNED" },
+    { category: "Common Saying", phrase: "YOU CANT TEACH AN OLD DOG NEW TRICKS" },
+    { category: "Common Saying", phrase: "WHEN LIFE GIVES YOU LEMONS MAKE LEMONADE" },
+    { category: "Common Saying", phrase: "ALL THAT GLITTERS IS NOT GOLD" },
+    { category: "Common Saying", phrase: "GOOD THINGS COME TO THOSE WHO WAIT" },
+    { category: "Common Saying", phrase: "HONESTY IS THE BEST POLICY" },
+    { category: "Common Saying", phrase: "TWO WRONGS DONT MAKE A RIGHT" },
+  ],
+  "Food & Drink": [
+    { category: "Food", phrase: "APPLE PIE" },
+    { category: "Food", phrase: "CHOCOLATE CHIP COOKIES" },
+    { category: "Food", phrase: "MASHED POTATOES AND GRAVY" },
+    { category: "Food", phrase: "PEANUT BUTTER AND JELLY" },
+    { category: "Food", phrase: "STRAWBERRY SHORTCAKE" },
+    { category: "Food", phrase: "BANANA SPLIT" },
+    { category: "Food", phrase: "CHICKEN POT PIE" },
+    { category: "Food", phrase: "GRILLED CHEESE SANDWICH" },
+    { category: "Food", phrase: "HOT DOG WITH MUSTARD" },
+    { category: "Food", phrase: "MACARONI AND CHEESE" },
+    { category: "Food", phrase: "BLUEBERRY MUFFIN" },
+    { category: "Food", phrase: "BEEF STEW" },
+  ],
+  "Famous Places": [
+    { category: "Place", phrase: "GRAND CANYON" },
+    { category: "Place", phrase: "STATUE OF LIBERTY" },
+    { category: "Place", phrase: "GOLDEN GATE BRIDGE" },
+    { category: "Place", phrase: "MOUNT RUSHMORE" },
+    { category: "Place", phrase: "NIAGARA FALLS" },
+    { category: "Place", phrase: "EMPIRE STATE BUILDING" },
+    { category: "Place", phrase: "YELLOWSTONE NATIONAL PARK" },
+    { category: "Place", phrase: "HOLLYWOOD WALK OF FAME" },
+    { category: "Place", phrase: "LIBERTY BELL" },
+    { category: "Place", phrase: "WHITE HOUSE" },
+    { category: "Place", phrase: "TIMES SQUARE" },
+    { category: "Place", phrase: "LAS VEGAS STRIP" },
+  ],
+  "Animals": [
+    { category: "Animal", phrase: "BALD EAGLE" },
+    { category: "Animal", phrase: "GOLDEN RETRIEVER" },
+    { category: "Animal", phrase: "MONARCH BUTTERFLY" },
+    { category: "Animal", phrase: "HUMMINGBIRD" },
+    { category: "Animal", phrase: "SEA TURTLE" },
+    { category: "Animal", phrase: "GRIZZLY BEAR" },
+    { category: "Animal", phrase: "BLUE JAY" },
+    { category: "Animal", phrase: "RED FOX" },
+    { category: "Animal", phrase: "WHITE TAILED DEER" },
+    { category: "Animal", phrase: "BOTTLENOSE DOLPHIN" },
+  ],
+  "Around the House": [
+    { category: "Around the House", phrase: "ROCKING CHAIR" },
+    { category: "Around the House", phrase: "KITCHEN TABLE" },
+    { category: "Around the House", phrase: "FRONT PORCH" },
+    { category: "Around the House", phrase: "FLOWER GARDEN" },
+    { category: "Around the House", phrase: "PICTURE FRAME" },
+    { category: "Around the House", phrase: "DINING ROOM" },
+    { category: "Around the House", phrase: "WELCOME MAT" },
+    { category: "Around the House", phrase: "WINDOW CURTAINS" },
+    { category: "Around the House", phrase: "GRANDFATHER CLOCK" },
+    { category: "Around the House", phrase: "BOOKSHELF" },
+  ],
+  "Fun Phrases": [
+    { category: "Fun Phrase", phrase: "BREAK A LEG" },
+    { category: "Fun Phrase", phrase: "PIECE OF CAKE" },
+    { category: "Fun Phrase", phrase: "UNDER THE WEATHER" },
+    { category: "Fun Phrase", phrase: "RAINING CATS AND DOGS" },
+    { category: "Fun Phrase", phrase: "EASY AS PIE" },
+    { category: "Fun Phrase", phrase: "BLESSING IN DISGUISE" },
+    { category: "Fun Phrase", phrase: "BEST OF BOTH WORLDS" },
+    { category: "Fun Phrase", phrase: "ONCE IN A BLUE MOON" },
+    { category: "Fun Phrase", phrase: "THE WHOLE NINE YARDS" },
+    { category: "Fun Phrase", phrase: "BITE THE BULLET" },
+  ],
+  "Classic TV Shows": [
+    { category: "Classic TV", phrase: "I LOVE LUCY" },
+    { category: "Classic TV", phrase: "THE ED SULLIVAN SHOW" },
+    { category: "Classic TV", phrase: "THE ANDY GRIFFITH SHOW" },
+    { category: "Classic TV", phrase: "LEAVE IT TO BEAVER" },
+    { category: "Classic TV", phrase: "THE HONEYMOONERS" },
+    { category: "Classic TV", phrase: "GUNSMOKE" },
+    { category: "Classic TV", phrase: "MASH" },
+    { category: "Classic TV", phrase: "THE DICK VAN DYKE SHOW" },
+    { category: "Classic TV", phrase: "HAPPY DAYS" },
+    { category: "Classic TV", phrase: "THE CAROL BURNETT SHOW" },
+    { category: "Classic TV", phrase: "BONANZA" },
+    { category: "Classic TV", phrase: "THE PRICE IS RIGHT" },
+    { category: "Classic TV", phrase: "WHEEL OF FORTUNE" },
+    { category: "Classic TV", phrase: "JEOPARDY" },
+    { category: "Classic TV", phrase: "THE GOLDEN GIRLS" },
+  ],
+  "Nostalgia (50s-70s)": [
+    { category: "Nostalgia", phrase: "DRIVE IN MOVIE THEATER" },
+    { category: "Nostalgia", phrase: "SOCK HOP" },
+    { category: "Nostalgia", phrase: "SODA FOUNTAIN" },
+    { category: "Nostalgia", phrase: "POODLE SKIRT" },
+    { category: "Nostalgia", phrase: "RECORD PLAYER" },
+    { category: "Nostalgia", phrase: "ROTARY PHONE" },
+    { category: "Nostalgia", phrase: "STATION WAGON" },
+    { category: "Nostalgia", phrase: "TRANSISTOR RADIO" },
+    { category: "Nostalgia", phrase: "PENNY CANDY STORE" },
+    { category: "Nostalgia", phrase: "ROLLER SKATING RINK" },
+    { category: "Nostalgia", phrase: "HULA HOOP" },
+    { category: "Nostalgia", phrase: "SUNDAY DRIVE" },
+  ],
+  "Holiday": [
+    { category: "Holiday", phrase: "CANDY CANE" },
+    { category: "Holiday", phrase: "CHRISTMAS TREE" },
+    { category: "Holiday", phrase: "PUMPKIN PIE" },
+    { category: "Holiday", phrase: "FOURTH OF JULY FIREWORKS" },
+    { category: "Holiday", phrase: "THANKSGIVING TURKEY" },
+    { category: "Holiday", phrase: "EASTER EGG HUNT" },
+    { category: "Holiday", phrase: "VALENTINES DAY CARD" },
+    { category: "Holiday", phrase: "NEW YEARS EVE" },
+    { category: "Holiday", phrase: "TRICK OR TREAT" },
+    { category: "Holiday", phrase: "GINGERBREAD HOUSE" },
+    { category: "Holiday", phrase: "SILENT NIGHT" },
+    { category: "Holiday", phrase: "JINGLE BELLS" },
+  ],
+  "Nature & Garden": [
+    { category: "Nature", phrase: "SUNFLOWER" },
+    { category: "Nature", phrase: "WEEPING WILLOW" },
+    { category: "Nature", phrase: "MORNING DEW" },
+    { category: "Nature", phrase: "BLUE SKY" },
+    { category: "Nature", phrase: "RAINBOW" },
+    { category: "Nature", phrase: "ROSE GARDEN" },
+    { category: "Nature", phrase: "CHERRY BLOSSOM" },
+    { category: "Nature", phrase: "BABBLING BROOK" },
+    { category: "Nature", phrase: "AUTUMN LEAVES" },
+    { category: "Nature", phrase: "FULL MOON" },
+    { category: "Nature", phrase: "OCEAN BREEZE" },
+    { category: "Nature", phrase: "MOUNTAIN MEADOW" },
+  ],
+};
+
+// ============================================================
+//  PRE-LOADED CONTENT — FILL IN THE BLANK
+// ============================================================
+
+const fitbPacks = {
+  "Proverbs": [
+    { category: "Proverb", phrase: "A stitch in time saves ___.", answer: "nine", source: "Common Proverb" },
+    { category: "Proverb", phrase: "An apple a day keeps the ___ away.", answer: "doctor", source: "Common Proverb" },
+    { category: "Proverb", phrase: "The pen is mightier than the ___.", answer: "sword", source: "Common Proverb" },
+    { category: "Proverb", phrase: "A bird in the hand is worth two in the ___.", answer: "bush", source: "Common Proverb" },
+    { category: "Proverb", phrase: "Don't count your ___ before they hatch.", answer: "chickens", source: "Common Proverb" },
+    { category: "Proverb", phrase: "You can lead a horse to water but you can't make it ___.", answer: "drink", source: "Common Proverb" },
+    { category: "Proverb", phrase: "Curiosity killed the ___.", answer: "cat", source: "Common Proverb" },
+    { category: "Proverb", phrase: "Rome wasn't built in a ___.", answer: "day", source: "Common Proverb" },
+    { category: "Proverb", phrase: "When in Rome, do as the ___ do.", answer: "Romans", source: "Common Proverb" },
+    { category: "Proverb", phrase: "Two heads are better than ___.", answer: "one", source: "Common Proverb" },
+    { category: "Proverb", phrase: "The early bird catches the ___.", answer: "worm", source: "Common Proverb" },
+    { category: "Proverb", phrase: "Don't put all your eggs in one ___.", answer: "basket", source: "Common Proverb" },
+    { category: "Proverb", phrase: "Actions speak louder than ___.", answer: "words", source: "Common Proverb" },
+    { category: "Proverb", phrase: "If the shoe fits, ___ it.", answer: "wear", source: "Common Proverb" },
+  ],
+  "Famous Phrases": [
+    { category: "Famous Phrase", phrase: "That's one small step for man, one giant ___ for mankind.", answer: "leap", source: "Neil Armstrong" },
+    { category: "Famous Phrase", phrase: "To be or not to be, that is the ___.", answer: "question", source: "William Shakespeare" },
+    { category: "Famous Phrase", phrase: "I think, therefore I ___.", answer: "am", source: "Rene Descartes" },
+    { category: "Famous Phrase", phrase: "The only thing we have to fear is fear ___.", answer: "itself", source: "Franklin D. Roosevelt" },
+    { category: "Famous Phrase", phrase: "Ask not what your country can do for you, ask what you can do for your ___.", answer: "country", source: "John F. Kennedy" },
+    { category: "Famous Phrase", phrase: "Float like a butterfly, sting like a ___.", answer: "bee", source: "Muhammad Ali" },
+    { category: "Famous Phrase", phrase: "That is one small step for man, one giant leap for ___.", answer: "mankind", source: "Neil Armstrong" },
+    { category: "Famous Phrase", phrase: "I have a ___.", answer: "dream", source: "Martin Luther King Jr." },
+  ],
+  "Everyday Sayings": [
+    { category: "Everyday Saying", phrase: "Better late than ___.", answer: "never", source: "Common Saying" },
+    { category: "Everyday Saying", phrase: "A picture is worth a thousand ___.", answer: "words", source: "Common Saying" },
+    { category: "Everyday Saying", phrase: "The grass is always greener on the other ___.", answer: "side", source: "Common Saying" },
+    { category: "Everyday Saying", phrase: "Every dog has its ___.", answer: "day", source: "Common Saying" },
+    { category: "Everyday Saying", phrase: "Let sleeping dogs ___.", answer: "lie", source: "Common Saying" },
+    { category: "Everyday Saying", phrase: "The best things in life are ___.", answer: "free", source: "Common Saying" },
+    { category: "Everyday Saying", phrase: "Where there's a will, there's a ___.", answer: "way", source: "Common Saying" },
+    { category: "Everyday Saying", phrase: "You can't judge a book by its ___.", answer: "cover", source: "Common Saying" },
+    { category: "Everyday Saying", phrase: "When it rains, it ___.", answer: "pours", source: "Common Saying" },
+    { category: "Everyday Saying", phrase: "Beggars can't be ___.", answer: "choosers", source: "Common Saying" },
+    { category: "Everyday Saying", phrase: "An ounce of prevention is worth a pound of ___.", answer: "cure", source: "Benjamin Franklin" },
+    { category: "Everyday Saying", phrase: "Absence makes the heart grow ___.", answer: "fonder", source: "Common Saying" },
+  ],
+  "Nature & Weather": [
+    { category: "Nature", phrase: "April showers bring May ___.", answer: "flowers", source: "Common Saying" },
+    { category: "Nature", phrase: "Red sky at night, sailor's ___.", answer: "delight", source: "Weather Proverb" },
+    { category: "Nature", phrase: "Make hay while the ___ shines.", answer: "sun", source: "Common Proverb" },
+    { category: "Nature", phrase: "Every rose has its ___.", answer: "thorn", source: "Common Saying" },
+    { category: "Nature", phrase: "Slow and steady wins the ___.", answer: "race", source: "Aesop's Fable" },
+    { category: "Nature", phrase: "A rolling stone gathers no ___.", answer: "moss", source: "Common Proverb" },
+    { category: "Nature", phrase: "Still waters run ___.", answer: "deep", source: "Common Proverb" },
+    { category: "Nature", phrase: "You reap what you ___.", answer: "sow", source: "Common Saying" },
+  ],
+  "Nursery Rhymes & Songs": [
+    { category: "Nursery Rhyme", phrase: "Twinkle twinkle little ___.", answer: "star", source: "Nursery Rhyme" },
+    { category: "Nursery Rhyme", phrase: "Jack and Jill went up the ___.", answer: "hill", source: "Nursery Rhyme" },
+    { category: "Nursery Rhyme", phrase: "Mary had a little ___.", answer: "lamb", source: "Nursery Rhyme" },
+    { category: "Nursery Rhyme", phrase: "Humpty Dumpty sat on a ___.", answer: "wall", source: "Nursery Rhyme" },
+    { category: "Nursery Rhyme", phrase: "Little Bo Peep has lost her ___.", answer: "sheep", source: "Nursery Rhyme" },
+    { category: "Nursery Rhyme", phrase: "Hey diddle diddle, the cat and the ___.", answer: "fiddle", source: "Nursery Rhyme" },
+    { category: "Nursery Rhyme", phrase: "Row row row your ___.", answer: "boat", source: "Nursery Rhyme" },
+    { category: "Nursery Rhyme", phrase: "Jack be nimble, Jack be ___.", answer: "quick", source: "Nursery Rhyme" },
+    { category: "Nursery Rhyme", phrase: "Peter Peter pumpkin ___.", answer: "eater", source: "Nursery Rhyme" },
+  ],
+  "Holiday Phrases": [
+    { category: "Holiday", phrase: "Jingle bells, jingle bells, jingle all the ___.", answer: "way", source: "Christmas Song" },
+    { category: "Holiday", phrase: "Over the river and through the woods to ___ house we go.", answer: "grandmother's", source: "Thanksgiving Song" },
+    { category: "Holiday", phrase: "Rudolph the red-nosed ___.", answer: "reindeer", source: "Christmas Song" },
+    { category: "Holiday", phrase: "Frosty the ___.", answer: "snowman", source: "Christmas Song" },
+    { category: "Holiday", phrase: "Here comes Peter ___.", answer: "Cottontail", source: "Easter Song" },
+    { category: "Holiday", phrase: "Chestnuts roasting on an open ___.", answer: "fire", source: "Christmas Song" },
+    { category: "Holiday", phrase: "Deck the ___ with boughs of holly.", answer: "halls", source: "Christmas Carol" },
+    { category: "Holiday", phrase: "Oh say can you see by the dawn's early ___.", answer: "light", source: "Star-Spangled Banner" },
+  ],
+  "Bible & Hymns": [
+    { category: "Bible", phrase: "The Lord is my ___.", answer: "shepherd", source: "Psalm 23" },
+    { category: "Bible", phrase: "Do unto others as you would have them do unto ___.", answer: "you", source: "The Golden Rule" },
+    { category: "Bible", phrase: "Faith, hope, and love, but the greatest of these is ___.", answer: "love", source: "1 Corinthians 13" },
+    { category: "Hymn", phrase: "Amazing grace, how sweet the ___.", answer: "sound", source: "Amazing Grace" },
+    { category: "Bible", phrase: "For God so loved the ___.", answer: "world", source: "John 3:16" },
+    { category: "Hymn", phrase: "He's got the whole world in His ___.", answer: "hands", source: "Spiritual" },
+    { category: "Bible", phrase: "Love thy ___ as thyself.", answer: "neighbor", source: "Matthew 22:39" },
+    { category: "Bible", phrase: "Ask and you shall ___.", answer: "receive", source: "Matthew 7:7" },
+  ],
+  "Classic Movies": [
+    { category: "Movie Quote", phrase: "There's no place like ___.", answer: "home", source: "The Wizard of Oz" },
+    { category: "Movie Quote", phrase: "Here's looking at you, ___.", answer: "kid", source: "Casablanca" },
+    { category: "Movie Quote", phrase: "Life is like a box of ___.", answer: "chocolates", source: "Forrest Gump" },
+    { category: "Movie Quote", phrase: "May the ___ be with you.", answer: "Force", source: "Star Wars" },
+    { category: "Movie Quote", phrase: "You're gonna need a bigger ___.", answer: "boat", source: "Jaws" },
+    { category: "Movie Quote", phrase: "I'll be ___.", answer: "back", source: "The Terminator" },
+    { category: "Movie Quote", phrase: "ET phone ___.", answer: "home", source: "E.T." },
+    { category: "Movie Quote", phrase: "Just keep ___.", answer: "swimming", source: "Finding Nemo" },
+  ],
+};
 
 // ============================================================
 //  GAME STATE
 // ============================================================
 
 let wofList = [], wofIndex = 0;
-let wofPuzzlePoints = 26;    // Points remaining for current puzzle
-let wofTotalPoints = 0;       // Cumulative points scored
-let wofPossiblePoints = 0;    // Cumulative possible points (26 per puzzle)
+let wofPuzzlePoints = 26;
+let wofTotalPoints = 0;
+let wofPossiblePoints = 0;
 let wofPuzzlesCompleted = 0;
-let wofPuzzleFinalized = false; // Whether current puzzle's score has been banked
+let wofPuzzleFinalized = false;
 let fitbList = [], fitbIndex = 0, fitbScore = 0, fitbShowScore = false;
 let fitbRevealed = false;
+
+// Pack selection state
+let wofSelectedPacks = new Set();
+let fitbSelectedPacks = new Set();
 
 // ============================================================
 //  NAVIGATION
@@ -685,11 +1129,89 @@ function shuffle(arr) {
 }
 
 // ============================================================
+//  CATEGORY PICKER
+// ============================================================
+
+function buildPackGrid(containerId, packs, selectedSet) {
+  const grid = document.getElementById(containerId);
+  grid.innerHTML = '';
+  Object.keys(packs).forEach(name => {
+    const card = document.createElement('div');
+    card.className = 'pack-card' + (selectedSet.has(name) ? ' selected' : '');
+    card.innerHTML = `${name} <span class="pack-count">(${packs[name].length})</span>`;
+    card.addEventListener('click', () => {
+      if (selectedSet.has(name)) {
+        selectedSet.delete(name);
+        card.classList.remove('selected');
+      } else {
+        selectedSet.add(name);
+        card.classList.add('selected');
+      }
+      playClick();
+    });
+    grid.appendChild(card);
+  });
+}
+
+function toggleAllPacks(game) {
+  playClick();
+  if (game === 'wof') {
+    const allNames = Object.keys(wofPacks);
+    if (wofSelectedPacks.size === allNames.length) {
+      wofSelectedPacks.clear();
+    } else {
+      allNames.forEach(n => wofSelectedPacks.add(n));
+    }
+    buildPackGrid('wof-pack-grid', wofPacks, wofSelectedPacks);
+  } else {
+    const allNames = Object.keys(fitbPacks);
+    if (fitbSelectedPacks.size === allNames.length) {
+      fitbSelectedPacks.clear();
+    } else {
+      allNames.forEach(n => fitbSelectedPacks.add(n));
+    }
+    buildPackGrid('fitb-pack-grid', fitbPacks, fitbSelectedPacks);
+  }
+}
+
+function showWofPicker() {
+  // Default: select all packs
+  if (wofSelectedPacks.size === 0) {
+    Object.keys(wofPacks).forEach(n => wofSelectedPacks.add(n));
+  }
+  buildPackGrid('wof-pack-grid', wofPacks, wofSelectedPacks);
+  showScreen('wof-picker');
+}
+
+function showFitbPicker() {
+  if (fitbSelectedPacks.size === 0) {
+    Object.keys(fitbPacks).forEach(n => fitbSelectedPacks.add(n));
+  }
+  buildPackGrid('fitb-pack-grid', fitbPacks, fitbSelectedPacks);
+  showScreen('fitb-picker');
+}
+
+function getSelectedPuzzles(packs, selectedSet) {
+  let puzzles = [];
+  selectedSet.forEach(name => {
+    if (packs[name]) puzzles = puzzles.concat(packs[name]);
+  });
+  return puzzles;
+}
+
+// ============================================================
 //  WHEEL OF FORTUNE
 // ============================================================
 
-function startWOF() {
-  wofList = shuffle(wofPuzzles);
+function launchWOF() {
+  const puzzles = getSelectedPuzzles(wofPacks, wofSelectedPacks);
+  if (puzzles.length === 0) {
+    // Select all if none chosen
+    Object.keys(wofPacks).forEach(n => wofSelectedPacks.add(n));
+    wofList = shuffle(Object.values(wofPacks).flat());
+  } else {
+    wofList = shuffle(puzzles);
+  }
   wofIndex = 0;
   wofTotalPoints = 0;
   wofPossiblePoints = 0;
@@ -697,6 +1219,9 @@ function startWOF() {
   showScreen('wof-screen');
   renderWofPuzzle();
 }
+
+// Keep old function name for compatibility
+function startWOF() { showWofPicker(); }
 
 function renderWofPuzzle() {
   const puzzle = wofList[wofIndex];
@@ -711,7 +1236,6 @@ function renderWofPuzzle() {
   wofPuzzleFinalized = false;
   updateWofScoreDisplay();
 
-  // Split phrase into words — each word is wrapped so it never breaks mid-word
   const words = puzzle.phrase.split(' ');
   words.forEach(word => {
     const wordGroup = document.createElement('div');
@@ -728,7 +1252,6 @@ function renderWofPuzzle() {
         tile.dataset.revealed = 'false';
         tile.addEventListener('click', () => revealTile(tile));
       } else {
-        // Punctuation — show it directly
         tile.textContent = ch;
         tile.style.background = 'transparent';
         tile.style.color = 'var(--text-dim)';
@@ -747,16 +1270,27 @@ function revealTile(tile) {
   tile.textContent = tile.dataset.letter;
 }
 
+function checkAllRevealed() {
+  const hidden = document.querySelectorAll('.wof-tile.letter:not(.revealed)');
+  if (hidden.length === 0 && !wofPuzzleFinalized) {
+    wofFinalizePuzzle();
+    showPuzzleCompleteMsg('Nice!');
+    launchConfetti(40);
+    playRevealFanfare();
+  }
+}
+
 function wofRevealRandom() {
   const hidden = [...document.querySelectorAll('.wof-tile.letter:not(.revealed)')];
   if (hidden.length === 0) return;
   const tile = hidden[Math.floor(Math.random() * hidden.length)];
   revealTile(tile);
+  playCorrectChime();
+  checkAllRevealed();
 }
 
-// Keyboard letter guessing — press a letter key to reveal all matching tiles
+// Keyboard letter guessing
 document.addEventListener('keydown', (e) => {
-  // Only active on WOF screen, ignore if a modal or input is focused
   if (!document.getElementById('wof-screen').classList.contains('active')) return;
   if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
   if (document.getElementById('wof-modal').classList.contains('active')) return;
@@ -764,7 +1298,6 @@ document.addEventListener('keydown', (e) => {
   const letter = e.key.toUpperCase();
   if (!/^[A-Z]$/.test(letter)) return;
 
-  // Prevent the keypress from also triggering a focused button
   e.preventDefault();
 
   const tiles = document.querySelectorAll('.wof-tile.letter:not(.revealed)');
@@ -776,8 +1309,14 @@ document.addEventListener('keydown', (e) => {
     }
   });
 
-  // Show the guessed letter in the used-letters display
+  if (found) {
+    playCorrectChime();
+  } else {
+    playWrongBuzz();
+  }
+
   updateUsedLetters(letter, found);
+  checkAllRevealed();
 });
 
 let usedLetters = new Set();
@@ -792,7 +1331,6 @@ function updateUsedLetters(letter, found) {
   if (usedLetters.has(letter)) return;
   usedLetters.add(letter);
 
-  // Wrong guess loses a point
   if (!found && wofPuzzlePoints > 0) {
     wofPuzzlePoints--;
     updateWofScoreDisplay();
@@ -818,10 +1356,12 @@ function wofFinalizePuzzle() {
 function wofRevealAll() {
   document.querySelectorAll('.wof-tile.letter:not(.revealed)').forEach(revealTile);
   wofFinalizePuzzle();
+  showPuzzleCompleteMsg('Nice!');
+  launchConfetti(40);
+  playRevealFanfare();
 }
 
 function wofNext() {
-  // Finalize current puzzle score if not already done
   wofFinalizePuzzle();
   wofIndex++;
   if (wofIndex >= wofList.length) {
@@ -829,12 +1369,11 @@ function wofNext() {
     wofList = shuffle(wofList);
   }
   renderWofPuzzle();
+  playClick();
 }
 
 function wofFinish() {
-  // Finalize current puzzle if they were mid-puzzle
   wofFinalizePuzzle();
-  // Calculate grade
   const pct = wofPossiblePoints > 0 ? Math.round((wofTotalPoints / wofPossiblePoints) * 100) : 0;
   let grade, gradeClass;
   if (pct >= 98)      { grade = 'A+'; gradeClass = 'grade-aplus'; }
@@ -852,6 +1391,17 @@ function wofFinish() {
   gradeEl.textContent = grade;
   gradeEl.className = 'end-grade ' + gradeClass;
   showScreen('wof-end');
+
+  // Celebration based on grade
+  if (pct >= 90) {
+    launchConfetti(80);
+    playCelebration();
+  } else if (pct >= 70) {
+    launchConfetti(40);
+    playRevealFanfare();
+  } else {
+    playRevealFanfare();
+  }
 }
 
 function updateWofScoreDisplay() {
@@ -863,8 +1413,14 @@ function updateWofScoreDisplay() {
 //  FILL IN THE BLANK
 // ============================================================
 
-function startFITB() {
-  fitbList = shuffle(fitbPhrases);
+function launchFITB() {
+  const phrases = getSelectedPuzzles(fitbPacks, fitbSelectedPacks);
+  if (phrases.length === 0) {
+    Object.keys(fitbPacks).forEach(n => fitbSelectedPacks.add(n));
+    fitbList = shuffle(Object.values(fitbPacks).flat());
+  } else {
+    fitbList = shuffle(phrases);
+  }
   fitbIndex = 0;
   fitbScore = 0;
   fitbRevealed = false;
@@ -872,6 +1428,8 @@ function startFITB() {
   showScreen('fitb-screen');
   renderFitbPhrase();
 }
+
+function startFITB() { showFitbPicker(); }
 
 function renderFitbPhrase() {
   const item = fitbList[fitbIndex];
@@ -882,15 +1440,11 @@ function renderFitbPhrase() {
   document.getElementById('fitb-progress').textContent =
     `Phrase ${fitbIndex + 1} of ${fitbList.length}`;
 
-  // Build phrase with blanks
   const phraseEl = document.getElementById('fitb-phrase');
-
-  // Replace the answer word(s) with blank spans
   const answers = Array.isArray(item.answer) ? item.answer : [item.answer];
   let html = escapeHtml(item.phrase);
 
   answers.forEach(ans => {
-    // Replace "___" placeholder if present, otherwise replace the answer word
     if (html.includes('___')) {
       html = html.replace('___',
         `<span class="fitb-blank" data-answer="${escapeHtml(ans)}">&nbsp;</span>`);
@@ -915,6 +1469,9 @@ function fitbReveal() {
   });
   fitbScore++;
   updateFitbScoreDisplay();
+  playRevealFanfare();
+  showPuzzleCompleteMsg('That\'s it!');
+  launchConfetti(30);
 }
 
 function fitbNext() {
@@ -924,6 +1481,7 @@ function fitbNext() {
     fitbList = shuffle(fitbList);
   }
   renderFitbPhrase();
+  playClick();
 }
 
 function toggleFitbScore() {
@@ -964,11 +1522,11 @@ function addWofCustom() {
   if (!phrase) return;
 
   const newPuzzle = { category: cat, phrase: phrase };
-  // Insert right after current puzzle so it shows next
   wofList.splice(wofIndex + 1, 0, newPuzzle);
   closeModal('wof-modal');
   document.getElementById('wof-progress').textContent =
     `Puzzle ${wofIndex + 1} of ${wofList.length}`;
+  playClick();
 }
 
 function addFitbCustom() {
@@ -978,7 +1536,6 @@ function addFitbCustom() {
   const source = document.getElementById('fitb-custom-source').value.trim();
   if (!phrase || !blankWords) return;
 
-  // Replace blank words in phrase with ___
   let displayPhrase = phrase;
   const answers = blankWords.split(/\s+/);
   answers.forEach(word => {
@@ -996,6 +1553,7 @@ function addFitbCustom() {
   closeModal('fitb-modal');
   document.getElementById('fitb-progress').textContent =
     `Phrase ${fitbIndex + 1} of ${fitbList.length}`;
+  playClick();
 }
 
 // Close modals on overlay click
