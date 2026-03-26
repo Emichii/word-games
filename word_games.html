@@ -640,6 +640,103 @@
     60% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
     100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
   }
+
+  /* ===== WORD FIND ===== */
+  #ws-screen { background: linear-gradient(180deg, #1a2e1a 0%, #1a1a2e 100%); }
+
+  .game-btn.ws {
+    background: linear-gradient(135deg, #27ae60, #5cb85c);
+  }
+
+  .ws-layout {
+    display: flex;
+    gap: 50px;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .ws-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 64px);
+    grid-template-rows: repeat(8, 64px);
+    gap: 4px;
+  }
+
+  .ws-cell {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 700;
+    border-radius: 8px;
+    background: var(--tile-bg);
+    border: 2px solid rgba(255,255,255,0.1);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    user-select: none;
+  }
+
+  .ws-cell:hover { border-color: rgba(255,255,255,0.3); }
+
+  .ws-cell.selected {
+    border-color: var(--accent-blue);
+    background: rgba(74,144,217,0.3);
+    box-shadow: 0 0 12px rgba(74,144,217,0.5);
+  }
+
+  .ws-cell.found {
+    background: rgba(92,184,92,0.3);
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+  }
+
+  .ws-cell.flash-wrong {
+    animation: flashWrong 0.4s ease;
+  }
+
+  @keyframes flashWrong {
+    0% { background: rgba(217,83,79,0.4); border-color: #d9534f; }
+    100% { background: var(--tile-bg); border-color: rgba(255,255,255,0.1); }
+  }
+
+  .ws-word-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 180px;
+  }
+
+  .ws-word-list h3 {
+    font-size: 28px;
+    margin-bottom: 8px;
+    color: var(--text-dim);
+  }
+
+  .ws-word {
+    font-size: 26px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.06);
+    transition: all 0.3s;
+    letter-spacing: 2px;
+  }
+
+  .ws-word.found {
+    text-decoration: line-through;
+    color: var(--accent-green);
+    background: rgba(92,184,92,0.1);
+  }
+
+  .ws-found-count {
+    font-size: 24px;
+    color: var(--text-dim);
+    text-align: center;
+  }
 </style>
 </head>
 <body>
@@ -662,6 +759,10 @@
     <button class="game-btn fitb" onclick="showFitbPicker()">
       <span class="icon">&#x270D;&#xFE0F;</span>
       <span class="label">Fill in the Blank</span>
+    </button>
+    <button class="game-btn ws" onclick="showWsPicker()">
+      <span class="icon">&#x1F50D;</span>
+      <span class="label">Word Find</span>
     </button>
   </div>
 </div>
@@ -796,6 +897,59 @@
     <div class="modal-buttons">
       <button class="btn btn-back" onclick="closeModal('fitb-modal')">Cancel</button>
       <button class="btn btn-warm" onclick="addFitbCustom()">Add Phrase</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== WORD FIND CATEGORY PICKER ===== -->
+<div id="ws-picker" class="screen picker-screen">
+  <h2>Word Find</h2>
+  <p class="picker-subtitle">Choose your word packs</p>
+  <div class="pack-grid" id="ws-pack-grid"></div>
+  <div class="picker-buttons">
+    <button class="btn btn-outline" onclick="toggleAllPacks('ws')">Select All</button>
+    <button class="btn btn-green" onclick="launchWS()">Start Game</button>
+    <button class="btn btn-back" onclick="goHome()">Back</button>
+  </div>
+</div>
+
+<!-- ===== WORD FIND GAME ===== -->
+<div id="ws-screen" class="screen">
+  <div class="game-header">
+    <h2>Word Find</h2>
+    <div class="header-controls">
+      <div id="ws-found-count" class="score-display">Found: 0 / 0</div>
+      <button class="sound-btn" id="sound-toggle-ws" onclick="toggleSound(this)" title="Toggle Sound">&#x1F50A;</button>
+      <button class="btn btn-outline" onclick="openWsCustom()">+ Custom</button>
+      <button class="btn btn-back" onclick="goHome()">Menu</button>
+    </div>
+  </div>
+
+  <div class="game-body">
+    <div class="ws-layout">
+      <div class="ws-grid" id="ws-grid"></div>
+      <div class="ws-word-list" id="ws-word-list">
+        <h3>Find These Words</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="game-footer">
+    <button class="btn btn-green" onclick="wsNewPuzzle()">New Puzzle</button>
+    <button class="btn btn-back" onclick="goHome()">Menu</button>
+  </div>
+</div>
+
+<!-- ===== WORD FIND CUSTOM MODAL ===== -->
+<div id="ws-modal" class="modal-overlay">
+  <div class="modal">
+    <h3>Custom Word Find</h3>
+    <label>Words (comma separated, 3-8 words)</label>
+    <input type="text" id="ws-custom-words" placeholder="e.g., CAT, DOG, BIRD, FISH, BEAR">
+    <p class="hint">Words should be 3-7 letters. They'll be placed in an 8x8 grid.</p>
+    <div class="modal-buttons">
+      <button class="btn btn-back" onclick="closeModal('ws-modal')">Cancel</button>
+      <button class="btn btn-green" onclick="addWsCustom()">Create Puzzle</button>
     </div>
   </div>
 </div>
@@ -1704,6 +1858,335 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
     if (e.target === overlay) overlay.classList.remove('active');
   });
 });
+
+// ============================================================
+//  WORD FIND — DATA
+// ============================================================
+
+const wsPacks = {
+  "Animals": ["CAT", "DOG", "BIRD", "FISH", "BEAR", "DEER", "FROG", "DUCK", "HORSE", "LAMB", "GOAT", "SWAN"],
+  "Food": ["CAKE", "SOUP", "RICE", "CORN", "BREAD", "CANDY", "APPLE", "GRAPE", "LEMON", "STEW", "TACO", "PASTA"],
+  "Nature": ["ROSE", "TREE", "LEAF", "RAIN", "STAR", "MOON", "SUN", "SNOW", "LAKE", "WIND", "HILL", "SEED"],
+  "Around the House": ["LAMP", "DOOR", "CHAIR", "TABLE", "CLOCK", "PHONE", "RADIO", "COUCH", "BATH", "SHELF"],
+  "Holiday": ["BELL", "CANDY", "ANGEL", "SNOW", "GIFT", "HOLLY", "CAROL", "STAR", "LOVE", "CARD", "FEAST"],
+  "Everyday": ["BOOK", "LOVE", "SMILE", "HAPPY", "MUSIC", "DANCE", "HEART", "HOPE", "DREAM", "LAUGH", "SING"],
+};
+
+// ============================================================
+//  WORD FIND — STATE
+// ============================================================
+
+let wsGrid = [];           // 8x8 array of letters
+let wsPlacedWords = [];    // [{word, cells: [{r,c},...]}]
+let wsFoundWords = new Set();
+let wsSelectedCell = null; // {r,c} or null
+let wsSelectedPacks = new Set();
+
+// ============================================================
+//  WORD FIND — CATEGORY PICKER
+// ============================================================
+
+function showWsPicker() {
+  if (wsSelectedPacks.size === 0) {
+    Object.keys(wsPacks).forEach(n => wsSelectedPacks.add(n));
+  }
+  buildPackGrid('ws-pack-grid', wsPacks, wsSelectedPacks);
+  showScreen('ws-picker');
+}
+
+// Extend toggleAllPacks for ws
+const _origToggleAllPacks = toggleAllPacks;
+toggleAllPacks = function(game) {
+  if (game === 'ws') {
+    playClick();
+    const allNames = Object.keys(wsPacks);
+    if (wsSelectedPacks.size === allNames.length) {
+      wsSelectedPacks.clear();
+    } else {
+      allNames.forEach(n => wsSelectedPacks.add(n));
+    }
+    buildPackGrid('ws-pack-grid', wsPacks, wsSelectedPacks);
+  } else {
+    _origToggleAllPacks(game);
+  }
+};
+
+// ============================================================
+//  WORD FIND — GRID GENERATION
+// ============================================================
+
+const WS_SIZE = 8;
+const WS_WORD_COUNT = 6;
+
+// Directions: right, down, diagonal-down-right (no reverse for seniors)
+const WS_DIRS = [
+  { dr: 0, dc: 1 },  // horizontal right
+  { dr: 1, dc: 0 },  // vertical down
+  { dr: 1, dc: 1 },  // diagonal down-right
+];
+
+function generateGrid(words) {
+  // Pick WS_WORD_COUNT words, preferring shorter ones that fit better
+  const candidates = shuffle(words).filter(w => w.length <= WS_SIZE);
+  const toPlace = candidates.slice(0, WS_WORD_COUNT);
+
+  // Create empty grid
+  const grid = Array.from({ length: WS_SIZE }, () => Array(WS_SIZE).fill(''));
+  const placed = [];
+
+  for (const word of toPlace) {
+    let didPlace = false;
+    const dirs = shuffle(WS_DIRS);
+
+    for (let attempt = 0; attempt < 80 && !didPlace; attempt++) {
+      const dir = dirs[attempt % dirs.length];
+      const maxR = WS_SIZE - (dir.dr * (word.length - 1)) - 1;
+      const maxC = WS_SIZE - (dir.dc * (word.length - 1)) - 1;
+      if (maxR < 0 || maxC < 0) continue;
+
+      const startR = Math.floor(Math.random() * (maxR + 1));
+      const startC = Math.floor(Math.random() * (maxC + 1));
+
+      // Check if word fits without conflict
+      let canPlace = true;
+      const cells = [];
+      for (let i = 0; i < word.length; i++) {
+        const r = startR + dir.dr * i;
+        const c = startC + dir.dc * i;
+        const existing = grid[r][c];
+        if (existing !== '' && existing !== word[i]) {
+          canPlace = false;
+          break;
+        }
+        cells.push({ r, c });
+      }
+
+      if (canPlace) {
+        for (let i = 0; i < word.length; i++) {
+          grid[cells[i].r][cells[i].c] = word[i];
+        }
+        placed.push({ word, cells });
+        didPlace = true;
+      }
+    }
+  }
+
+  // Fill empty cells with random letters
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  for (let r = 0; r < WS_SIZE; r++) {
+    for (let c = 0; c < WS_SIZE; c++) {
+      if (grid[r][c] === '') {
+        grid[r][c] = letters[Math.floor(Math.random() * 26)];
+      }
+    }
+  }
+
+  return { grid, placed };
+}
+
+// ============================================================
+//  WORD FIND — LAUNCH & RENDER
+// ============================================================
+
+function launchWS() {
+  let allWords = [];
+  wsSelectedPacks.forEach(name => {
+    if (wsPacks[name]) allWords = allWords.concat(wsPacks[name]);
+  });
+  if (allWords.length === 0) {
+    Object.keys(wsPacks).forEach(n => wsSelectedPacks.add(n));
+    allWords = Object.values(wsPacks).flat();
+  }
+
+  const result = generateGrid(allWords);
+  wsGrid = result.grid;
+  wsPlacedWords = result.placed;
+  wsFoundWords = new Set();
+  wsSelectedCell = null;
+
+  showScreen('ws-screen');
+  renderWsGrid();
+  renderWsWordList();
+  updateWsFoundCount();
+}
+
+function wsNewPuzzle() {
+  launchWS();
+  playClick();
+}
+
+function renderWsGrid() {
+  const gridEl = document.getElementById('ws-grid');
+  gridEl.innerHTML = '';
+
+  for (let r = 0; r < WS_SIZE; r++) {
+    for (let c = 0; c < WS_SIZE; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'ws-cell';
+      cell.textContent = wsGrid[r][c];
+      cell.dataset.row = r;
+      cell.dataset.col = c;
+      cell.addEventListener('click', () => wsClickCell(r, c));
+      gridEl.appendChild(cell);
+    }
+  }
+}
+
+function renderWsWordList() {
+  const listEl = document.getElementById('ws-word-list');
+  listEl.innerHTML = '<h3>Find These Words</h3>';
+
+  wsPlacedWords.forEach(pw => {
+    const div = document.createElement('div');
+    div.className = 'ws-word';
+    div.id = 'ws-word-' + pw.word;
+    div.textContent = pw.word;
+    listEl.appendChild(div);
+  });
+}
+
+function updateWsFoundCount() {
+  document.getElementById('ws-found-count').textContent =
+    `Found: ${wsFoundWords.size} / ${wsPlacedWords.length}`;
+}
+
+// ============================================================
+//  WORD FIND — CLICK INTERACTION
+// ============================================================
+
+function getCellEl(r, c) {
+  return document.querySelector(`.ws-cell[data-row="${r}"][data-col="${c}"]`);
+}
+
+function wsClickCell(r, c) {
+  if (wsSelectedCell === null) {
+    // First click — select this cell
+    wsSelectedCell = { r, c };
+    getCellEl(r, c).classList.add('selected');
+    playClick();
+  } else if (wsSelectedCell.r === r && wsSelectedCell.c === c) {
+    // Clicked same cell — deselect
+    getCellEl(r, c).classList.remove('selected');
+    wsSelectedCell = null;
+  } else {
+    // Second click — try to match a word
+    const startR = wsSelectedCell.r;
+    const startC = wsSelectedCell.c;
+    const endR = r;
+    const endC = c;
+
+    // Clear selection highlight
+    getCellEl(startR, startC).classList.remove('selected');
+    wsSelectedCell = null;
+
+    // Check if it's a straight line
+    const dr = endR - startR;
+    const dc = endC - startC;
+    const len = Math.max(Math.abs(dr), Math.abs(dc)) + 1;
+
+    // Must be horizontal, vertical, or diagonal (equal steps)
+    const isLine = (dr === 0 || dc === 0 || Math.abs(dr) === Math.abs(dc));
+    if (!isLine || len < 2) {
+      wsFlashWrong(startR, startC, endR, endC);
+      return;
+    }
+
+    const stepR = dr === 0 ? 0 : (dr > 0 ? 1 : -1);
+    const stepC = dc === 0 ? 0 : (dc > 0 ? 1 : -1);
+
+    // Build the string from start to end
+    const cells = [];
+    let word = '';
+    for (let i = 0; i < len; i++) {
+      const cr = startR + stepR * i;
+      const cc = startC + stepC * i;
+      cells.push({ r: cr, c: cc });
+      word += wsGrid[cr][cc];
+    }
+
+    // Also check reverse
+    const wordRev = word.split('').reverse().join('');
+
+    // Check if this matches any unfound placed word
+    let matchedWord = null;
+    for (const pw of wsPlacedWords) {
+      if (wsFoundWords.has(pw.word)) continue;
+      if (pw.word === word || pw.word === wordRev) {
+        matchedWord = pw;
+        break;
+      }
+    }
+
+    if (matchedWord) {
+      // Found a word!
+      wsFoundWords.add(matchedWord.word);
+
+      // Highlight cells
+      cells.forEach(({ r, c }) => {
+        getCellEl(r, c).classList.add('found');
+      });
+
+      // Cross off word list
+      const wordEl = document.getElementById('ws-word-' + matchedWord.word);
+      if (wordEl) wordEl.classList.add('found');
+
+      updateWsFoundCount();
+      playCorrectChime();
+
+      // Check if all found
+      if (wsFoundWords.size === wsPlacedWords.length) {
+        setTimeout(() => {
+          showPuzzleCompleteMsg('All Found!');
+          launchConfetti(60);
+          playRevealFanfare();
+        }, 300);
+      }
+    } else {
+      wsFlashWrong(startR, startC, endR, endC);
+    }
+  }
+}
+
+function wsFlashWrong(r1, c1, r2, c2) {
+  playWrongBuzz();
+  [getCellEl(r1, c1), getCellEl(r2, c2)].forEach(el => {
+    el.classList.add('flash-wrong');
+    setTimeout(() => el.classList.remove('flash-wrong'), 400);
+  });
+}
+
+// ============================================================
+//  WORD FIND — CUSTOM
+// ============================================================
+
+function openWsCustom() {
+  document.getElementById('ws-custom-words').value = '';
+  document.getElementById('ws-modal').classList.add('active');
+}
+
+function addWsCustom() {
+  const input = document.getElementById('ws-custom-words').value.trim();
+  if (!input) return;
+
+  const words = input.split(',')
+    .map(w => w.trim().toUpperCase().replace(/[^A-Z]/g, ''))
+    .filter(w => w.length >= 3 && w.length <= 7);
+
+  if (words.length < 3) return;
+
+  const result = generateGrid(words.slice(0, 8));
+  wsGrid = result.grid;
+  wsPlacedWords = result.placed;
+  wsFoundWords = new Set();
+  wsSelectedCell = null;
+
+  closeModal('ws-modal');
+  showScreen('ws-screen');
+  renderWsGrid();
+  renderWsWordList();
+  updateWsFoundCount();
+  playClick();
+}
 </script>
 </body>
 </html>
