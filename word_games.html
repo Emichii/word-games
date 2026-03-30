@@ -300,36 +300,45 @@
     box-shadow: 0 0 16px rgba(74,144,217,0.5);
   }
 
-  .used-letters {
+  .letter-board {
     display: flex;
-    gap: 10px;
+    gap: 6px;
     flex-wrap: wrap;
     justify-content: center;
-    min-height: 44px;
+    max-width: 900px;
   }
 
-  .used-letter {
+  .letter-board-cell {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 8px;
     font-size: 22px;
     font-weight: 700;
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+    border: 2px solid rgba(255,255,255,0.12);
+    transition: all 0.3s;
   }
 
-  .used-letter.hit {
+  .letter-board-cell.vowel {
+    border-color: rgba(241,196,15,0.3);
+  }
+
+  .letter-board-cell.hit {
     background: var(--accent-green);
     color: white;
+    border-color: var(--accent-green);
     animation: hitPulse 0.4s ease;
   }
 
-  .used-letter.miss {
-    background: rgba(255,255,255,0.1);
-    color: var(--text-dim);
+  .letter-board-cell.miss {
+    background: rgba(255,255,255,0.03);
+    color: rgba(255,255,255,0.15);
+    border-color: rgba(255,255,255,0.05);
     text-decoration: line-through;
-    animation: missPulse 0.3s ease;
   }
 
   @keyframes tileReveal {
@@ -874,7 +883,7 @@
   <div class="game-body">
     <div class="category-label" id="wof-category"></div>
     <div class="wof-board" id="wof-board"></div>
-    <div id="wof-used-letters" class="used-letters"></div>
+    <div id="wof-letter-board" class="letter-board"></div>
     <div class="spin-panel">
       <div class="spin-prompt" id="wof-spin-prompt">Spin the wheel!</div>
       <div class="spin-panel-label">Tap the value they spun:</div>
@@ -1403,7 +1412,8 @@ let wofTotalPoints = 0;
 let wofPuzzlesCompleted = 0;
 let wofPuzzleFinalized = false;
 let wofSpinValue = 0;        // Current spin value (0 = not yet spun)
-const WOF_SPIN_VALUES = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
+const WOF_SPIN_VALUES = [100, 100, 200, 300, 400, 500, 600, 700, 800, 1000];
+const WOF_VOWELS = new Set(['A', 'E', 'I', 'O', 'U']);
 let fitbList = [], fitbIndex = 0, fitbScore = 0, fitbShowScore = false;
 let fitbRevealed = false;
 
@@ -1522,8 +1532,8 @@ function launchWOF() {
   wofTotalPoints = 0;
   wofPuzzlesCompleted = 0;
   showScreen('wof-screen');
-  renderWofPuzzle();
   renderSpinButtons();
+  renderWofPuzzle();
 }
 
 // Keep old function name for compatibility
@@ -1532,23 +1542,49 @@ function startWOF() { showWofPicker(); }
 function renderSpinButtons() {
   const container = document.getElementById('wof-spin-buttons');
   container.innerHTML = '';
-  WOF_SPIN_VALUES.forEach(val => {
+  WOF_SPIN_VALUES.forEach((val, i) => {
     const btn = document.createElement('button');
     btn.className = 'spin-btn';
-    btn.textContent = val;
-    btn.addEventListener('click', () => selectSpinValue(val));
+    btn.dataset.index = i;
+    if (val === 100) {
+      btn.textContent = '100';
+      btn.title = 'Vowels only (A, E, I, O, U)';
+      btn.style.borderColor = 'rgba(241,196,15,0.4)';
+    } else {
+      btn.textContent = val;
+    }
+    btn.addEventListener('click', () => selectSpinValue(val, i));
     container.appendChild(btn);
   });
 }
 
-function selectSpinValue(val) {
+function selectSpinValue(val, index) {
   wofSpinValue = val;
-  document.querySelectorAll('.spin-btn').forEach(b => {
-    b.classList.toggle('active', parseInt(b.textContent) === val);
-  });
+  wofSpinIndex = index;
+  document.querySelectorAll('.spin-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.spin-btn[data-index="${index}"]`).classList.add('active');
   document.getElementById('wof-spin-prompt').classList.add('hidden');
-  document.getElementById('wof-spin-result').textContent = `Spun ${val} — now guess a letter!`;
+  if (val === 100) {
+    document.getElementById('wof-spin-result').textContent = `Spun 100 — guess a vowel! (A, E, I, O, U)`;
+  } else {
+    document.getElementById('wof-spin-result').textContent = `Spun ${val} — guess a consonant!`;
+  }
   playClick();
+}
+
+let wofSpinIndex = -1;
+
+function renderLetterBoard() {
+  const board = document.getElementById('wof-letter-board');
+  board.innerHTML = '';
+  for (let i = 0; i < 26; i++) {
+    const letter = String.fromCharCode(65 + i);
+    const cell = document.createElement('div');
+    cell.className = 'letter-board-cell' + (WOF_VOWELS.has(letter) ? ' vowel' : '');
+    cell.textContent = letter;
+    cell.id = 'lb-' + letter;
+    board.appendChild(cell);
+  }
 }
 
 function renderWofPuzzle() {
@@ -1559,8 +1595,10 @@ function renderWofPuzzle() {
 
   const board = document.getElementById('wof-board');
   board.innerHTML = '';
-  resetUsedLetters();
+  usedLetters = new Set();
+  renderLetterBoard();
   wofSpinValue = 0;
+  wofSpinIndex = -1;
   wofPuzzleFinalized = false;
   updateWofScoreDisplay();
 
@@ -1643,6 +1681,21 @@ document.addEventListener('keydown', (e) => {
   // Don't allow guessing already-used letters
   if (usedLetters.has(letter)) return;
 
+  // Enforce vowel/consonant rule
+  const isVowel = WOF_VOWELS.has(letter);
+  if (wofSpinValue === 100 && !isVowel) {
+    document.getElementById('wof-spin-result').textContent =
+      `100 is for vowels only! Guess A, E, I, O, or U.`;
+    playWrongBuzz();
+    return;
+  }
+  if (wofSpinValue !== 100 && isVowel) {
+    document.getElementById('wof-spin-result').textContent =
+      `Vowels require spinning 100! ${letter} is a vowel.`;
+    playWrongBuzz();
+    return;
+  }
+
   const tiles = document.querySelectorAll('.wof-tile.letter:not(.revealed)');
   let matchCount = 0;
   tiles.forEach(tile => {
@@ -1651,6 +1704,12 @@ document.addEventListener('keydown', (e) => {
       matchCount++;
     }
   });
+
+  // Update letter board
+  const lbCell = document.getElementById('lb-' + letter);
+  if (lbCell) {
+    lbCell.classList.add(matchCount > 0 ? 'hit' : 'miss');
+  }
 
   if (matchCount > 0) {
     const earned = wofSpinValue * matchCount;
@@ -1664,7 +1723,7 @@ document.addEventListener('keydown', (e) => {
       `No ${letter}'s — 0 points.`;
   }
 
-  updateUsedLetters(letter, matchCount > 0);
+  usedLetters.add(letter);
   updateWofScoreDisplay();
 
   // Reset spin value for next turn
@@ -1683,24 +1742,6 @@ document.addEventListener('keydown', (e) => {
 });
 
 let usedLetters = new Set();
-
-function resetUsedLetters() {
-  usedLetters = new Set();
-  const el = document.getElementById('wof-used-letters');
-  if (el) el.innerHTML = '';
-}
-
-function updateUsedLetters(letter, found) {
-  if (usedLetters.has(letter)) return;
-  usedLetters.add(letter);
-
-  const el = document.getElementById('wof-used-letters');
-  if (!el) return;
-  const span = document.createElement('span');
-  span.textContent = letter;
-  span.className = found ? 'used-letter hit' : 'used-letter miss';
-  el.appendChild(span);
-}
 
 function wofFinalizePuzzle() {
   if (wofPuzzleFinalized) return;
