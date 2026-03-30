@@ -895,7 +895,8 @@
 
   <div class="game-footer">
     <button class="btn btn-blue" onclick="wofRevealRandom(); this.blur();">Reveal a Letter</button>
-    <button class="btn btn-green" onclick="wofRevealAll(); this.blur();">Solve Puzzle</button>
+    <button class="btn btn-green" onclick="openWofSolve(); this.blur();">Solve (+2000 pts)</button>
+    <button class="btn btn-outline" onclick="wofRevealAll(); this.blur();">Give Up</button>
     <button class="btn btn-warm" onclick="wofNext(); this.blur();">Next Puzzle &rarr;</button>
     <button class="btn btn-back" onclick="wofFinish(); this.blur();">Finish Game</button>
   </div>
@@ -944,6 +945,19 @@
 </div>
 
 <!-- ===== WOF CUSTOM MODAL ===== -->
+<!-- ===== WOF SOLVE MODAL ===== -->
+<div id="wof-solve-modal" class="modal-overlay">
+  <div class="modal">
+    <h3>Solve the Puzzle!</h3>
+    <label>Type the answer:</label>
+    <input type="text" id="wof-solve-input" placeholder="Type the full phrase..." autocomplete="off" onkeydown="if(event.key==='Enter')submitWofSolve()">
+    <div class="modal-buttons">
+      <button class="btn btn-back" onclick="closeModal('wof-solve-modal')">Cancel</button>
+      <button class="btn btn-green" onclick="submitWofSolve()">Submit Answer</button>
+    </div>
+  </div>
+</div>
+
 <div id="wof-modal" class="modal-overlay">
   <div class="modal">
     <h3>Add Custom Puzzle</h3>
@@ -1665,6 +1679,7 @@ document.addEventListener('keydown', (e) => {
   if (!document.getElementById('wof-screen').classList.contains('active')) return;
   if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
   if (document.getElementById('wof-modal').classList.contains('active')) return;
+  if (document.getElementById('wof-solve-modal').classList.contains('active')) return;
 
   const letter = e.key.toUpperCase();
   if (!/^[A-Z]$/.test(letter)) return;
@@ -1753,9 +1768,44 @@ function wofFinalizePuzzle() {
 function wofRevealAll() {
   document.querySelectorAll('.wof-tile.letter:not(.revealed)').forEach(revealTile);
   wofFinalizePuzzle();
-  showPuzzleCompleteMsg('Nice!');
-  launchConfetti(40);
+  showPuzzleCompleteMsg('Revealed!');
   playRevealFanfare();
+}
+
+function openWofSolve() {
+  // Don't allow solve if puzzle already complete
+  const hidden = document.querySelectorAll('.wof-tile.letter:not(.revealed)');
+  if (hidden.length === 0) return;
+  document.getElementById('wof-solve-input').value = '';
+  document.getElementById('wof-solve-modal').classList.add('active');
+  setTimeout(() => document.getElementById('wof-solve-input').focus(), 100);
+}
+
+function submitWofSolve() {
+  const input = document.getElementById('wof-solve-input').value.trim();
+  if (!input) return;
+
+  const puzzle = wofList[wofIndex];
+  const correct = puzzle.phrase.replace(/[^A-Za-z]/g, '').toUpperCase();
+  const guess = input.replace(/[^A-Za-z]/g, '').toUpperCase();
+
+  closeModal('wof-solve-modal');
+
+  if (guess === correct) {
+    // Correct solve! Reveal all + bonus
+    document.querySelectorAll('.wof-tile.letter:not(.revealed)').forEach(revealTile);
+    wofTotalPoints += 2000;
+    wofFinalizePuzzle();
+    updateWofScoreDisplay();
+    document.getElementById('wof-spin-result').textContent = 'Solved it! +2,000 bonus points!';
+    showPuzzleCompleteMsg('SOLVED! +2000 pts!');
+    launchConfetti(80);
+    playCelebration();
+  } else {
+    // Wrong solve
+    playWrongBuzz();
+    document.getElementById('wof-spin-result').textContent = `"${input}" is not correct — keep guessing!`;
+  }
 }
 
 function wofNext() {
