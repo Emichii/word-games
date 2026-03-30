@@ -641,6 +641,74 @@
     100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
   }
 
+  /* ===== SPIN VALUE PANEL ===== */
+  .spin-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .spin-panel-label {
+    font-size: 22px;
+    color: var(--text-dim);
+    font-weight: 600;
+  }
+
+  .spin-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 700px;
+  }
+
+  .spin-btn {
+    padding: 10px 18px;
+    border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+    font-size: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 70px;
+    text-align: center;
+  }
+
+  .spin-btn:hover { border-color: var(--accent-blue); background: rgba(74,144,217,0.15); }
+
+  .spin-btn.active {
+    border-color: #f1c40f;
+    background: rgba(241,196,15,0.2);
+    color: #f1c40f;
+    box-shadow: 0 0 12px rgba(241,196,15,0.3);
+  }
+
+  .spin-prompt {
+    font-size: 28px;
+    font-weight: 700;
+    color: #f1c40f;
+    text-align: center;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .spin-prompt.hidden { display: none; }
+
+  .spin-result {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--accent-green);
+    text-align: center;
+    min-height: 32px;
+  }
+
   /* ===== WORD FIND ===== */
   #ws-screen { background: linear-gradient(180deg, #1a2e1a 0%, #1a1a2e 100%); }
 
@@ -796,8 +864,7 @@
   <div class="game-header">
     <h2>Wheel of Fortune</h2>
     <div class="header-controls">
-      <div id="wof-puzzle-pts" class="score-display">Puzzle Points: 26</div>
-      <div id="wof-total-pts" class="score-display">Total: 0</div>
+      <div id="wof-total-pts" class="score-display">Total: 0 pts</div>
       <button class="sound-btn" id="sound-toggle-wof" onclick="toggleSound(this)" title="Toggle Sound">&#x1F50A;</button>
       <button class="btn btn-outline" onclick="openWofCustom()">+ Custom</button>
       <button class="btn btn-back" onclick="goHome()">Menu</button>
@@ -808,12 +875,18 @@
     <div class="category-label" id="wof-category"></div>
     <div class="wof-board" id="wof-board"></div>
     <div id="wof-used-letters" class="used-letters"></div>
+    <div class="spin-panel">
+      <div class="spin-prompt" id="wof-spin-prompt">Spin the wheel!</div>
+      <div class="spin-panel-label">Tap the value they spun:</div>
+      <div class="spin-buttons" id="wof-spin-buttons"></div>
+      <div class="spin-result" id="wof-spin-result"></div>
+    </div>
     <div class="progress-text" id="wof-progress"></div>
   </div>
 
   <div class="game-footer">
     <button class="btn btn-blue" onclick="wofRevealRandom(); this.blur();">Reveal a Letter</button>
-    <button class="btn btn-green" onclick="wofRevealAll(); this.blur();">Reveal All</button>
+    <button class="btn btn-green" onclick="wofRevealAll(); this.blur();">Solve Puzzle</button>
     <button class="btn btn-warm" onclick="wofNext(); this.blur();">Next Puzzle &rarr;</button>
     <button class="btn btn-back" onclick="wofFinish(); this.blur();">Finish Game</button>
   </div>
@@ -824,8 +897,7 @@
   <div class="game-body" style="gap: 30px;">
     <div class="end-message">Great Job!</div>
     <div class="end-score" id="wof-end-puzzles"></div>
-    <div class="end-score" id="wof-end-points"></div>
-    <div class="end-grade" id="wof-end-grade"></div>
+    <div class="end-score" id="wof-end-points" style="font-size: 64px;"></div>
     <div style="display:flex; gap:20px; margin-top:20px;">
       <button class="btn btn-blue" onclick="showWofPicker()">Play Again</button>
       <button class="btn btn-back" onclick="goHome()">Menu</button>
@@ -1327,11 +1399,11 @@ const fitbPacks = {
 // ============================================================
 
 let wofList = [], wofIndex = 0;
-let wofPuzzlePoints = 26;
 let wofTotalPoints = 0;
-let wofPossiblePoints = 0;
 let wofPuzzlesCompleted = 0;
 let wofPuzzleFinalized = false;
+let wofSpinValue = 0;        // Current spin value (0 = not yet spun)
+const WOF_SPIN_VALUES = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
 let fitbList = [], fitbIndex = 0, fitbScore = 0, fitbShowScore = false;
 let fitbRevealed = false;
 
@@ -1441,7 +1513,6 @@ function getSelectedPuzzles(packs, selectedSet) {
 function launchWOF() {
   const puzzles = getSelectedPuzzles(wofPacks, wofSelectedPacks);
   if (puzzles.length === 0) {
-    // Select all if none chosen
     Object.keys(wofPacks).forEach(n => wofSelectedPacks.add(n));
     wofList = shuffle(Object.values(wofPacks).flat());
   } else {
@@ -1449,14 +1520,36 @@ function launchWOF() {
   }
   wofIndex = 0;
   wofTotalPoints = 0;
-  wofPossiblePoints = 0;
   wofPuzzlesCompleted = 0;
   showScreen('wof-screen');
   renderWofPuzzle();
+  renderSpinButtons();
 }
 
 // Keep old function name for compatibility
 function startWOF() { showWofPicker(); }
+
+function renderSpinButtons() {
+  const container = document.getElementById('wof-spin-buttons');
+  container.innerHTML = '';
+  WOF_SPIN_VALUES.forEach(val => {
+    const btn = document.createElement('button');
+    btn.className = 'spin-btn';
+    btn.textContent = val;
+    btn.addEventListener('click', () => selectSpinValue(val));
+    container.appendChild(btn);
+  });
+}
+
+function selectSpinValue(val) {
+  wofSpinValue = val;
+  document.querySelectorAll('.spin-btn').forEach(b => {
+    b.classList.toggle('active', parseInt(b.textContent) === val);
+  });
+  document.getElementById('wof-spin-prompt').classList.add('hidden');
+  document.getElementById('wof-spin-result').textContent = `Spun ${val} — now guess a letter!`;
+  playClick();
+}
 
 function renderWofPuzzle() {
   const puzzle = wofList[wofIndex];
@@ -1467,9 +1560,14 @@ function renderWofPuzzle() {
   const board = document.getElementById('wof-board');
   board.innerHTML = '';
   resetUsedLetters();
-  wofPuzzlePoints = 26;
+  wofSpinValue = 0;
   wofPuzzleFinalized = false;
   updateWofScoreDisplay();
+
+  // Reset spin panel
+  document.querySelectorAll('.spin-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('wof-spin-prompt').classList.remove('hidden');
+  document.getElementById('wof-spin-result').textContent = '';
 
   const words = puzzle.phrase.split(' ');
   words.forEach(word => {
@@ -1535,22 +1633,52 @@ document.addEventListener('keydown', (e) => {
 
   e.preventDefault();
 
+  // Must select a spin value first
+  if (wofSpinValue === 0) {
+    document.getElementById('wof-spin-prompt').classList.remove('hidden');
+    document.getElementById('wof-spin-result').textContent = 'Tap a spin value first!';
+    return;
+  }
+
+  // Don't allow guessing already-used letters
+  if (usedLetters.has(letter)) return;
+
   const tiles = document.querySelectorAll('.wof-tile.letter:not(.revealed)');
-  let found = false;
+  let matchCount = 0;
   tiles.forEach(tile => {
     if (tile.dataset.letter === letter) {
       revealTile(tile);
-      found = true;
+      matchCount++;
     }
   });
 
-  if (found) {
+  if (matchCount > 0) {
+    const earned = wofSpinValue * matchCount;
+    wofTotalPoints += earned;
     playCorrectChime();
+    document.getElementById('wof-spin-result').textContent =
+      `${letter} appears ${matchCount} time${matchCount > 1 ? 's' : ''} — +${earned} pts!`;
   } else {
     playWrongBuzz();
+    document.getElementById('wof-spin-result').textContent =
+      `No ${letter}'s — 0 points.`;
   }
 
-  updateUsedLetters(letter, found);
+  updateUsedLetters(letter, matchCount > 0);
+  updateWofScoreDisplay();
+
+  // Reset spin value for next turn
+  wofSpinValue = 0;
+  document.querySelectorAll('.spin-btn').forEach(b => b.classList.remove('active'));
+
+  // Show prompt again after a moment
+  setTimeout(() => {
+    const hidden = document.querySelectorAll('.wof-tile.letter:not(.revealed)');
+    if (hidden.length > 0) {
+      document.getElementById('wof-spin-prompt').classList.remove('hidden');
+    }
+  }, 1500);
+
   checkAllRevealed();
 });
 
@@ -1566,11 +1694,6 @@ function updateUsedLetters(letter, found) {
   if (usedLetters.has(letter)) return;
   usedLetters.add(letter);
 
-  if (!found && wofPuzzlePoints > 0) {
-    wofPuzzlePoints--;
-    updateWofScoreDisplay();
-  }
-
   const el = document.getElementById('wof-used-letters');
   if (!el) return;
   const span = document.createElement('span');
@@ -1582,8 +1705,6 @@ function updateUsedLetters(letter, found) {
 function wofFinalizePuzzle() {
   if (wofPuzzleFinalized) return;
   wofPuzzleFinalized = true;
-  wofTotalPoints += wofPuzzlePoints;
-  wofPossiblePoints += 26;
   wofPuzzlesCompleted++;
   updateWofScoreDisplay();
 }
@@ -1609,29 +1730,17 @@ function wofNext() {
 
 function wofFinish() {
   wofFinalizePuzzle();
-  const pct = wofPossiblePoints > 0 ? Math.round((wofTotalPoints / wofPossiblePoints) * 100) : 0;
-  let grade, gradeClass;
-  if (pct >= 98)      { grade = 'A+'; gradeClass = 'grade-aplus'; }
-  else if (pct >= 90) { grade = 'A';  gradeClass = 'grade-a'; }
-  else if (pct >= 80) { grade = 'B';  gradeClass = 'grade-b'; }
-  else if (pct >= 70) { grade = 'C';  gradeClass = 'grade-c'; }
-  else if (pct >= 60) { grade = 'D';  gradeClass = 'grade-d'; }
-  else                { grade = 'F';  gradeClass = 'grade-f'; }
 
   document.getElementById('wof-end-puzzles').textContent =
     `Puzzles Completed: ${wofPuzzlesCompleted}`;
   document.getElementById('wof-end-points').textContent =
-    `Score: ${wofTotalPoints} out of ${wofPossiblePoints} possible points (${pct}%)`;
-  const gradeEl = document.getElementById('wof-end-grade');
-  gradeEl.textContent = grade;
-  gradeEl.className = 'end-grade ' + gradeClass;
+    `${wofTotalPoints.toLocaleString()} points!`;
   showScreen('wof-end');
 
-  // Celebration based on grade
-  if (pct >= 90) {
+  if (wofTotalPoints >= 5000) {
     launchConfetti(80);
     playCelebration();
-  } else if (pct >= 70) {
+  } else if (wofTotalPoints >= 2000) {
     launchConfetti(40);
     playRevealFanfare();
   } else {
@@ -1640,8 +1749,7 @@ function wofFinish() {
 }
 
 function updateWofScoreDisplay() {
-  document.getElementById('wof-puzzle-pts').textContent = `Puzzle Points: ${wofPuzzlePoints}`;
-  document.getElementById('wof-total-pts').textContent = `Total: ${wofTotalPoints}`;
+  document.getElementById('wof-total-pts').textContent = `Total: ${wofTotalPoints.toLocaleString()} pts`;
 }
 
 // ============================================================
