@@ -224,7 +224,7 @@ function playPlaceholderThenReveal(parsed) {
                 font-size: 4rem;
                 color: #fff;
                 animation: rollBounce 1.5s ease-in-out;
-                box-shadow: 0 0 40px rgba(255,215,0,0.4);
+                box-shadow: 0 0 40px rgba(255,255,255,0.4);
             }
             .rolling-ball.letter-B { background: var(--col-b); }
             .rolling-ball.letter-I { background: var(--col-i); color: #1a1a2e; }
