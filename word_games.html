@@ -725,6 +725,10 @@
     background: linear-gradient(135deg, #27ae60, #5cb85c);
   }
 
+  .game-btn.bingo {
+    background: linear-gradient(135deg, #6a4c93, #e63946);
+  }
+
   .ws-layout {
     display: flex;
     gap: 50px;
@@ -840,6 +844,10 @@
     <button class="game-btn ws" onclick="showWsPicker()">
       <span class="icon">&#x1F50D;</span>
       <span class="label">Word Find</span>
+    </button>
+    <button class="game-btn bingo" onclick="window.open('bingo-caller/index.html','_blank')">
+      <span class="icon">&#x1F3B1;</span>
+      <span class="label">Bingo Caller</span>
     </button>
   </div>
 </div>

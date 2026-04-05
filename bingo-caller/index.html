@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BINGO Caller</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header>
+            <h1>BINGO!</h1>
+            <div class="controls-row">
+                <button id="music-toggle" class="btn btn-music" title="Toggle Music">
+                    &#9835; Music Off
+                </button>
+                <button id="new-game-btn" class="btn btn-new-game" title="Start New Game">
+                    New Game
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Stage: Video + Number Reveal -->
+        <div id="stage">
+            <div id="video-container" class="hidden">
+                <video id="ball-video" muted playsinline></video>
+            </div>
+            <div id="number-reveal" class="hidden">
+                <div id="reveal-letter"></div>
+                <div id="reveal-number"></div>
+            </div>
+            <div id="stage-prompt">
+                <p>Enter a bingo number to call!</p>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div id="input-area">
+            <div class="input-group">
+                <label for="ball-input">Call Number:</label>
+                <input type="text" id="ball-input" placeholder="e.g. B7, I22, N35..." maxlength="4" autocomplete="off">
+                <button id="call-btn" class="btn btn-call">CALL IT!</button>
+            </div>
+            <div id="input-error" class="hidden"></div>
+            <!-- Quick-pick buttons -->
+            <div id="quick-pick">
+                <span class="quick-label">Quick letter:</span>
+                <button class="btn btn-letter" data-letter="B">B</button>
+                <button class="btn btn-letter" data-letter="I">I</button>
+                <button class="btn btn-letter" data-letter="N">N</button>
+                <button class="btn btn-letter" data-letter="G">G</button>
+                <button class="btn btn-letter" data-letter="O">O</button>
+            </div>
+        </div>
+
+        <!-- Called Numbers History -->
+        <div id="history-section">
+            <h2>Called Numbers</h2>
+            <div id="called-board">
+                <!-- BINGO columns -->
+                <div class="bingo-column">
+                    <div class="column-header col-b">B</div>
+                    <div class="column-numbers" id="col-B"></div>
+                </div>
+                <div class="bingo-column">
+                    <div class="column-header col-i">I</div>
+                    <div class="column-numbers" id="col-I"></div>
+                </div>
+                <div class="bingo-column">
+                    <div class="column-header col-n">N</div>
+                    <div class="column-numbers" id="col-N"></div>
+                </div>
+                <div class="bingo-column">
+                    <div class="column-header col-g">G</div>
+                    <div class="column-numbers" id="col-G"></div>
+                </div>
+                <div class="bingo-column">
+                    <div class="column-header col-o">O</div>
+                    <div class="column-numbers" id="col-O"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent calls strip -->
+        <div id="recent-strip">
+            <h3>Last Called:</h3>
+            <div id="recent-calls"></div>
+        </div>
+    </div>
+
+    <!-- Background music audio element -->
+    <audio id="bg-music" loop>
+        <!-- Add your music files here. Example: -->
+        <!-- <source src="music/bingo-tunes.mp3" type="audio/mpeg"> -->
+    </audio>
+
+    <script src="app.js"></script>
+</body>
+</html>
