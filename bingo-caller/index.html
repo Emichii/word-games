@@ -23,44 +23,9 @@
             </div>
         </header>
 
-        <!-- Main Stage: Video + Number Reveal -->
-        <div id="stage">
-            <div id="video-container" class="hidden">
-                <video id="ball-video" muted playsinline></video>
-            </div>
-            <div id="number-reveal" class="hidden">
-                <div id="reveal-letter"></div>
-                <div id="reveal-number"></div>
-            </div>
-            <div id="stage-prompt">
-                <p>Enter a bingo number to call!</p>
-            </div>
-        </div>
-
-        <!-- Input Area -->
-        <div id="input-area">
-            <div class="input-group">
-                <label for="ball-input">Call Number:</label>
-                <input type="text" id="ball-input" placeholder="e.g. B7, I22, N35..." maxlength="4" autocomplete="off">
-                <button id="call-btn" class="btn btn-call">CALL IT!</button>
-            </div>
-            <div id="input-error" class="hidden"></div>
-            <!-- Quick-pick buttons -->
-            <div id="quick-pick">
-                <span class="quick-label">Quick letter:</span>
-                <button class="btn btn-letter" data-letter="B">B</button>
-                <button class="btn btn-letter" data-letter="I">I</button>
-                <button class="btn btn-letter" data-letter="N">N</button>
-                <button class="btn btn-letter" data-letter="G">G</button>
-                <button class="btn btn-letter" data-letter="O">O</button>
-            </div>
-        </div>
-
-        <!-- Called Numbers History -->
-        <div id="history-section">
-            <h2>Called Numbers</h2>
+        <!-- LEFT PANEL: Called Numbers Board -->
+        <div class="left-panel">
             <div id="called-board">
-                <!-- BINGO columns -->
                 <div class="bingo-column">
                     <div class="column-header col-b">B</div>
                     <div class="column-numbers" id="col-B"></div>
@@ -84,16 +49,50 @@
             </div>
         </div>
 
-        <!-- Recent calls strip -->
-        <div id="recent-strip">
-            <h3>Last Called:</h3>
-            <div id="recent-calls"></div>
+        <!-- RIGHT PANEL: Stage + Input + Recent -->
+        <div class="right-panel">
+            <!-- Main Stage: Video + Number Reveal -->
+            <div id="stage">
+                <div id="video-container" class="hidden">
+                    <video id="ball-video" muted playsinline></video>
+                </div>
+                <div id="number-reveal" class="hidden">
+                    <div id="reveal-letter"></div>
+                    <div id="reveal-number"></div>
+                </div>
+                <div id="stage-prompt">
+                    <p>Enter a bingo number to call!</p>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div id="input-area">
+                <div class="input-group">
+                    <label for="ball-input">Call Number:</label>
+                    <input type="text" id="ball-input" placeholder="e.g. B7, I22, N35..." maxlength="4" autocomplete="off">
+                    <button id="call-btn" class="btn btn-call">CALL IT!</button>
+                </div>
+                <div id="input-error" class="hidden"></div>
+                <div id="quick-pick">
+                    <span class="quick-label">Quick letter:</span>
+                    <button class="btn btn-letter" data-letter="B">B</button>
+                    <button class="btn btn-letter" data-letter="I">I</button>
+                    <button class="btn btn-letter" data-letter="N">N</button>
+                    <button class="btn btn-letter" data-letter="G">G</button>
+                    <button class="btn btn-letter" data-letter="O">O</button>
+                </div>
+            </div>
+
+            <!-- Recent calls strip -->
+            <div id="recent-strip">
+                <h3>Last Called:</h3>
+                <div id="recent-calls"></div>
+            </div>
         </div>
     </div>
 
     <!-- Background music audio element -->
     <audio id="bg-music" loop>
-        <!-- Add your music files here. Example: -->
         <!-- <source src="music/bingo-tunes.mp3" type="audio/mpeg"> -->
     </audio>
 
