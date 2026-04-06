@@ -259,9 +259,9 @@ function playPlaceholderThenReveal(parsed) {
 // ── NUMBER REVEAL ────────────────────────────────────────
 function showReveal(parsed) {
     revealLetter.textContent = parsed.letter;
-    revealLetter.className = `letter-${parsed.letter}`;
     revealNumber.textContent = parsed.num;
-    revealNumber.className = `letter-${parsed.letter}`;
+    const ball = document.getElementById("reveal-ball");
+    ball.className = `reveal-ball bg-${parsed.letter.toLowerCase()}`;
 
     numberReveal.classList.remove("hidden");
     // Trigger animation
@@ -295,7 +295,7 @@ function addToBoard(parsed) {
 // ── RECENT STRIP ─────────────────────────────────────────
 function updateRecentStrip() {
     recentCalls.innerHTML = "";
-    const show = callHistory.slice(0, 10);
+    const show = callHistory.slice(0, 2);
     show.forEach((p) => {
         const el = document.createElement("span");
         el.className = `recent-ball col-${p.letter.toLowerCase()}`;
