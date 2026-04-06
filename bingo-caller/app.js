@@ -60,10 +60,20 @@ const stagePrompt     = document.getElementById("stage-prompt");
 const ballInput       = document.getElementById("ball-input");
 const callBtn         = document.getElementById("call-btn");
 const inputError      = document.getElementById("input-error");
-const musicToggle     = document.getElementById("music-toggle");
-const newGameBtn      = document.getElementById("new-game-btn");
 const bgMusic         = document.getElementById("bg-music");
 const recentCalls     = document.getElementById("recent-calls");
+
+// Hamburger menu refs
+const hamburgerBtn    = document.getElementById("hamburger-btn");
+const hamburgerMenu   = document.getElementById("hamburger-menu");
+const menuMusic       = document.getElementById("menu-music");
+const menuNewGame     = document.getElementById("menu-new-game");
+
+// Celebration refs
+const bingoWinnerBtn  = document.getElementById("bingo-winner-btn");
+const celebrationOverlay = document.getElementById("celebration-overlay");
+const celebNewGame    = document.getElementById("celeb-new-game");
+const confettiContainer = document.getElementById("confetti-container");
 
 // ── INIT ─────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
@@ -72,16 +82,28 @@ document.addEventListener("DOMContentLoaded", () => {
         if (e.key === "Enter") handleCall();
     });
 
-    // Quick-pick letter buttons: pre-fill the letter
-    document.querySelectorAll(".btn-letter").forEach((btn) => {
-        btn.addEventListener("click", () => {
-            ballInput.value = btn.dataset.letter;
-            ballInput.focus();
-        });
+    // Hamburger menu
+    hamburgerBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        hamburgerMenu.classList.toggle("hidden");
+    });
+    document.addEventListener("click", () => {
+        hamburgerMenu.classList.add("hidden");
+    });
+    hamburgerMenu.addEventListener("click", (e) => e.stopPropagation());
+
+    menuMusic.addEventListener("click", toggleMusic);
+    menuNewGame.addEventListener("click", () => {
+        hamburgerMenu.classList.add("hidden");
+        confirmNewGame();
     });
 
-    musicToggle.addEventListener("click", toggleMusic);
-    newGameBtn.addEventListener("click", confirmNewGame);
+    // BINGO winner button
+    bingoWinnerBtn.addEventListener("click", showCelebration);
+    celebNewGame.addEventListener("click", () => {
+        hideCelebration();
+        resetGame();
+    });
 
     // If music tracks are defined in JS, load the first one
     if (MUSIC_TRACKS.length > 0) {
@@ -310,16 +332,50 @@ function toggleMusic() {
     if (musicOn) {
         bgMusic.play().catch(() => {
             musicOn = false;
-            musicToggle.textContent = "\u266B Music Off";
-            musicToggle.classList.remove("active");
+            menuMusic.textContent = "\u266B Music Off";
+            menuMusic.classList.remove("music-active");
         });
-        musicToggle.innerHTML = "&#9835; Music On";
-        musicToggle.classList.add("active");
+        menuMusic.innerHTML = "&#9835; Music On";
+        menuMusic.classList.add("music-active");
     } else {
         bgMusic.pause();
-        musicToggle.innerHTML = "&#9835; Music Off";
-        musicToggle.classList.remove("active");
+        menuMusic.innerHTML = "&#9835; Music Off";
+        menuMusic.classList.remove("music-active");
     }
+}
+
+// ── CELEBRATION ──────────────────────────────────────────
+function showCelebration() {
+    // Generate confetti pieces
+    confettiContainer.innerHTML = "";
+    const colors = ["var(--col-b)", "var(--col-i)", "var(--col-n)", "var(--col-g)", "var(--col-o)", "#ffd700", "#fff"];
+    for (let i = 0; i < 60; i++) {
+        const piece = document.createElement("div");
+        piece.className = "confetti-piece";
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const left = Math.random() * 100;
+        const size = 0.5 + Math.random() * 1;
+        const duration = 2 + Math.random() * 3;
+        const delay = Math.random() * 2;
+        const shape = Math.random() > 0.5 ? "50%" : "0";
+        piece.style.cssText = `
+            left: ${left}%;
+            width: ${size}vw;
+            height: ${size}vw;
+            background: ${color};
+            border-radius: ${shape};
+            animation-duration: ${duration}s;
+            animation-delay: ${delay}s;
+        `;
+        confettiContainer.appendChild(piece);
+    }
+
+    celebrationOverlay.classList.remove("hidden");
+}
+
+function hideCelebration() {
+    celebrationOverlay.classList.add("hidden");
+    confettiContainer.innerHTML = "";
 }
 
 // ── NEW GAME ─────────────────────────────────────────────

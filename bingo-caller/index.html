@@ -36,9 +36,20 @@
             </div>
         </div>
 
-        <!-- RIGHT PANEL: Title + Stage + Recent + Input + Controls -->
+        <!-- RIGHT PANEL -->
         <div class="right-panel">
-            <h1 class="title">BINGO!</h1>
+            <!-- Top bar: hamburger + title -->
+            <div class="top-bar">
+                <div class="hamburger-wrap">
+                    <button id="hamburger-btn" class="hamburger-btn" aria-label="Menu">&#9776;</button>
+                    <div id="hamburger-menu" class="hamburger-menu hidden">
+                        <button id="menu-music" class="menu-item">&#9835; Music Off</button>
+                        <button id="menu-new-game" class="menu-item">New Game</button>
+                        <a href="../word_games.html" class="menu-item">Return to Menu</a>
+                    </div>
+                </div>
+                <h1 class="title">BINGO!</h1>
+            </div>
 
             <!-- Main Stage: Video + Number Reveal -->
             <div id="stage">
@@ -72,14 +83,19 @@
                 <div id="input-error" class="hidden"></div>
             </div>
 
-            <!-- Bottom controls -->
-            <div class="bottom-controls">
-                <button id="music-toggle" class="btn btn-music" title="Toggle Music">
-                    &#9835; Music Off
-                </button>
-                <button id="new-game-btn" class="btn btn-new-game" title="Start New Game">
-                    New Game
-                </button>
+            <!-- BINGO winner button -->
+            <button id="bingo-winner-btn" class="btn btn-bingo-winner">BINGO!</button>
+        </div>
+    </div>
+
+    <!-- BINGO Celebration Overlay -->
+    <div id="celebration-overlay" class="hidden">
+        <div class="confetti-container" id="confetti-container"></div>
+        <div class="celebration-content">
+            <h1 class="celebration-title">BINGO!</h1>
+            <div class="celebration-buttons">
+                <button id="celeb-new-game" class="btn btn-celeb">New Game</button>
+                <a href="../word_games.html" class="btn btn-celeb btn-celeb-menu">Return to Menu</a>
             </div>
         </div>
     </div>
