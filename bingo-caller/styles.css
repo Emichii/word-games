@@ -160,6 +160,46 @@ body {
     color: #fff;
     animation: popIn 0.4s ease-out;
     flex-shrink: 0;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+}
+
+.called-number:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 12px rgba(255,255,255,0.4);
+    opacity: 0.9;
+}
+
+/* Compact mode — kicks in when any column has 11+ balls */
+#called-board.compact .column-header {
+    font-size: 1.8vw;
+    width: 2.6vw;
+    height: 2.6vw;
+}
+#called-board.compact .called-number {
+    font-size: 1.15vw;
+    width: 2.3vw;
+    height: 2.3vw;
+}
+#called-board.compact .column-numbers,
+#called-board.compact .bingo-column {
+    gap: 0.2vh;
+}
+
+/* Ultra-compact — when any column has 14+ balls (near-blackout) */
+#called-board.ultra-compact .column-header {
+    font-size: 1.5vw;
+    width: 2.1vw;
+    height: 2.1vw;
+}
+#called-board.ultra-compact .called-number {
+    font-size: 0.95vw;
+    width: 1.9vw;
+    height: 1.9vw;
+}
+#called-board.ultra-compact .column-numbers,
+#called-board.ultra-compact .bingo-column {
+    gap: 0.15vh;
 }
 
 .called-number.col-b { background: var(--col-b); }

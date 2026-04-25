@@ -311,7 +311,75 @@ function addToBoard(parsed) {
     const ball = document.createElement("div");
     ball.className = `called-number col-${parsed.letter.toLowerCase()}`;
     ball.textContent = parsed.num;
-    col.appendChild(ball);
+    ball.dataset.num = parsed.num;
+    ball.dataset.letter = parsed.letter;
+    ball.title = "Click to remove";
+    ball.addEventListener("click", () => undoCall(parsed.letter, parsed.num));
+
+    // Sorted insertion: find first existing ball with larger number, insert before it
+    const existing = Array.from(col.children);
+    const insertBefore = existing.find(
+        (child) => parseInt(child.dataset.num, 10) > parsed.num
+    );
+    if (insertBefore) {
+        col.insertBefore(ball, insertBefore);
+    } else {
+        col.appendChild(ball);
+    }
+
+    applyCompactMode();
+}
+
+// ── UNDO A CALL ──────────────────────────────────────────
+function undoCall(letter, num) {
+    const key = `${letter}${num}`;
+    if (!calledNumbers.has(key)) return;
+
+    calledNumbers.delete(key);
+    callHistory = callHistory.filter((p) => !(p.letter === letter && p.num === num));
+
+    // Remove the matching ball from the DOM
+    const col = document.getElementById(`col-${letter}`);
+    const ball = Array.from(col.children).find(
+        (child) => parseInt(child.dataset.num, 10) === num
+    );
+    if (ball) ball.remove();
+
+    updateRecentStrip();
+    applyCompactMode();
+    ballInput.focus();
+}
+
+// ── COMPACT MODE — auto-shrink balls only when actually overflowing ──
+function applyCompactMode() {
+    const board = document.getElementById("called-board");
+    board.classList.remove("compact", "ultra-compact");
+
+    // Force a layout pass, then check if any column's last ball
+    // extends past the board's content area. If yes, escalate.
+    void board.offsetHeight;
+    if (boardOverflows()) {
+        board.classList.add("compact");
+        void board.offsetHeight;
+        if (boardOverflows()) {
+            board.classList.remove("compact");
+            board.classList.add("ultra-compact");
+        }
+    }
+}
+
+function boardOverflows() {
+    const board = document.getElementById("called-board");
+    const boardRect = board.getBoundingClientRect();
+    const padBottom = parseFloat(getComputedStyle(board).paddingBottom) || 0;
+    const limit = boardRect.bottom - padBottom;
+    for (const letter of ["B", "I", "N", "G", "O"]) {
+        const col = document.getElementById(`col-${letter}`);
+        const last = col.lastElementChild;
+        if (!last) continue;
+        if (last.getBoundingClientRect().bottom > limit) return true;
+    }
+    return false;
 }
 
 // ── RECENT STRIP ─────────────────────────────────────────
@@ -410,6 +478,9 @@ function resetGame() {
     ["B", "I", "N", "G", "O"].forEach((letter) => {
         document.getElementById(`col-${letter}`).innerHTML = "";
     });
+
+    // Reset compact mode
+    applyCompactMode();
 
     // Clear recent strip
     recentCalls.innerHTML = "";
