@@ -261,7 +261,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 8px 16px;
+    gap: 8px 48px;
     max-width: 1100px;
     padding: 10px;
   }
@@ -272,14 +272,14 @@
   }
 
   .wof-tile {
-    width: 64px;
-    height: 76px;
+    width: 84px;
+    height: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 40px;
+    font-size: 54px;
     font-weight: 700;
-    border-radius: 8px;
+    border-radius: 10px;
     transition: all 0.3s;
     text-transform: uppercase;
   }
@@ -301,30 +301,39 @@
   }
 
   .letter-board {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(13, 1fr);
+    gap: 10px;
     justify-content: center;
-    max-width: 900px;
+    max-width: 1100px;
   }
 
   .letter-board-cell {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 8px;
-    font-size: 22px;
+    width: 68px;
+    height: 68px;
+    border-radius: 10px;
+    font-size: 34px;
     font-weight: 700;
     background: rgba(255,255,255,0.08);
     color: var(--text);
     border: 2px solid rgba(255,255,255,0.12);
     transition: all 0.3s;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .letter-board-cell:hover:not(.hit):not(.miss) {
+    border-color: var(--accent-blue);
+    transform: translateY(-1px);
   }
 
   .letter-board-cell.vowel {
-    border-color: rgba(241,196,15,0.3);
+    background: #f1c40f;
+    color: #1a1a2e;
+    border-color: #d4a90c;
   }
 
   .letter-board-cell.hit {
@@ -667,13 +676,13 @@
   .spin-buttons {
     display: flex;
     gap: 8px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: center;
-    max-width: 700px;
+    max-width: 100%;
   }
 
   .spin-btn {
-    padding: 10px 18px;
+    padding: 10px 14px;
     border: 2px solid rgba(255,255,255,0.15);
     border-radius: 10px;
     background: rgba(255,255,255,0.06);
@@ -682,8 +691,9 @@
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
-    min-width: 70px;
+    min-width: 64px;
     text-align: center;
+    flex-shrink: 0;
   }
 
   .spin-btn:hover { border-color: var(--accent-blue); background: rgba(74,144,217,0.15); }
@@ -1196,6 +1206,28 @@ const wofPacks = {
     { category: "Common Saying", phrase: "GOOD THINGS COME TO THOSE WHO WAIT" },
     { category: "Common Saying", phrase: "HONESTY IS THE BEST POLICY" },
     { category: "Common Saying", phrase: "TWO WRONGS DONT MAKE A RIGHT" },
+    { category: "Common Saying", phrase: "BIRDS OF A FEATHER FLOCK TOGETHER" },
+    { category: "Common Saying", phrase: "BETTER LATE THAN NEVER" },
+    { category: "Common Saying", phrase: "DONT JUDGE A BOOK BY ITS COVER" },
+    { category: "Common Saying", phrase: "BEAUTY IS IN THE EYE OF THE BEHOLDER" },
+    { category: "Common Saying", phrase: "TIME HEALS ALL WOUNDS" },
+    { category: "Common Saying", phrase: "WHERE THERES A WILL THERES A WAY" },
+    { category: "Common Saying", phrase: "AN APPLE A DAY KEEPS THE DOCTOR AWAY" },
+    { category: "Common Saying", phrase: "A STITCH IN TIME SAVES NINE" },
+    { category: "Common Saying", phrase: "ROME WASNT BUILT IN A DAY" },
+    { category: "Common Saying", phrase: "TWO HEADS ARE BETTER THAN ONE" },
+    { category: "Common Saying", phrase: "A FRIEND IN NEED IS A FRIEND INDEED" },
+    { category: "Common Saying", phrase: "IF AT FIRST YOU DONT SUCCEED TRY AGAIN" },
+    { category: "Common Saying", phrase: "THE PEN IS MIGHTIER THAN THE SWORD" },
+    { category: "Common Saying", phrase: "LOOK BEFORE YOU LEAP" },
+    { category: "Common Saying", phrase: "ALL GOOD THINGS MUST COME TO AN END" },
+    { category: "Common Saying", phrase: "DONT CRY OVER SPILLED MILK" },
+    { category: "Common Saying", phrase: "THE APPLE DOESNT FALL FAR FROM THE TREE" },
+    { category: "Common Saying", phrase: "ABSENCE MAKES THE HEART GROW FONDER" },
+    { category: "Common Saying", phrase: "BLOOD IS THICKER THAN WATER" },
+    { category: "Common Saying", phrase: "BEGGARS CANT BE CHOOSERS" },
+    { category: "Common Saying", phrase: "A WATCHED POT NEVER BOILS" },
+    { category: "Common Saying", phrase: "THE GRASS IS ALWAYS GREENER" },
   ],
   "Food & Drink": [
     { category: "Food", phrase: "APPLE PIE" },
@@ -1210,6 +1242,35 @@ const wofPacks = {
     { category: "Food", phrase: "MACARONI AND CHEESE" },
     { category: "Food", phrase: "BLUEBERRY MUFFIN" },
     { category: "Food", phrase: "BEEF STEW" },
+    { category: "Food", phrase: "BIRTHDAY CAKE" },
+    { category: "Food", phrase: "CINNAMON ROLL" },
+    { category: "Food", phrase: "CORN ON THE COB" },
+    { category: "Food", phrase: "ICED TEA WITH LEMON" },
+    { category: "Food", phrase: "LEMON MERINGUE PIE" },
+    { category: "Food", phrase: "POT ROAST DINNER" },
+    { category: "Food", phrase: "ICE CREAM SUNDAE" },
+    { category: "Food", phrase: "TUNA SALAD SANDWICH" },
+    { category: "Food", phrase: "BUTTERMILK PANCAKES" },
+    { category: "Food", phrase: "MEATLOAF AND POTATOES" },
+    { category: "Food", phrase: "VANILLA MILKSHAKE" },
+    { category: "Food", phrase: "HOMEMADE BREAD" },
+    { category: "Food", phrase: "COUNTRY FRIED STEAK" },
+    { category: "Food", phrase: "CLAM CHOWDER" },
+    { category: "Food", phrase: "COFFEE AND DONUTS" },
+    { category: "Food", phrase: "PEACH COBBLER" },
+    { category: "Food", phrase: "HAM AND EGGS" },
+    { category: "Food", phrase: "FRESH LEMONADE" },
+    { category: "Food", phrase: "CHOCOLATE FUDGE" },
+    { category: "Food", phrase: "BACON AND EGGS" },
+    { category: "Food", phrase: "HOT APPLE CIDER" },
+    { category: "Food", phrase: "CARROT CAKE" },
+    { category: "Food", phrase: "ROOT BEER FLOAT" },
+    { category: "Food", phrase: "CHICKEN NOODLE SOUP" },
+    { category: "Food", phrase: "BISCUITS AND GRAVY" },
+    { category: "Food", phrase: "CORNED BEEF AND CABBAGE" },
+    { category: "Food", phrase: "DEVILED EGGS" },
+    { category: "Food", phrase: "SHEPHERDS PIE" },
+    { category: "Food", phrase: "BAKED ALASKA" },
   ],
   "Famous Places": [
     { category: "Place", phrase: "GRAND CANYON" },
@@ -1224,6 +1285,33 @@ const wofPacks = {
     { category: "Place", phrase: "WHITE HOUSE" },
     { category: "Place", phrase: "TIMES SQUARE" },
     { category: "Place", phrase: "LAS VEGAS STRIP" },
+    { category: "Place", phrase: "EIFFEL TOWER" },
+    { category: "Place", phrase: "GREAT WALL OF CHINA" },
+    { category: "Place", phrase: "BIG BEN" },
+    { category: "Place", phrase: "LEANING TOWER OF PISA" },
+    { category: "Place", phrase: "TAJ MAHAL" },
+    { category: "Place", phrase: "BUCKINGHAM PALACE" },
+    { category: "Place", phrase: "MOUNT EVEREST" },
+    { category: "Place", phrase: "SYDNEY OPERA HOUSE" },
+    { category: "Place", phrase: "ROCKEFELLER CENTER" },
+    { category: "Place", phrase: "BROOKLYN BRIDGE" },
+    { category: "Place", phrase: "HOOVER DAM" },
+    { category: "Place", phrase: "CENTRAL PARK" },
+    { category: "Place", phrase: "KENNEDY SPACE CENTER" },
+    { category: "Place", phrase: "DISNEYLAND" },
+    { category: "Place", phrase: "CHRYSLER BUILDING" },
+    { category: "Place", phrase: "ALCATRAZ ISLAND" },
+    { category: "Place", phrase: "LINCOLN MEMORIAL" },
+    { category: "Place", phrase: "THE GRAND OLE OPRY" },
+    { category: "Place", phrase: "ELLIS ISLAND" },
+    { category: "Place", phrase: "THE PYRAMIDS OF GIZA" },
+    { category: "Place", phrase: "THE BLACK HILLS" },
+    { category: "Place", phrase: "ROUTE SIXTY SIX" },
+    { category: "Place", phrase: "CAPE COD" },
+    { category: "Place", phrase: "MARTHAS VINEYARD" },
+    { category: "Place", phrase: "FENWAY PARK" },
+    { category: "Place", phrase: "PEARL HARBOR" },
+    { category: "Place", phrase: "MOUNT SAINT HELENS" },
   ],
   "Animals": [
     { category: "Animal", phrase: "BALD EAGLE" },
@@ -1236,6 +1324,35 @@ const wofPacks = {
     { category: "Animal", phrase: "RED FOX" },
     { category: "Animal", phrase: "WHITE TAILED DEER" },
     { category: "Animal", phrase: "BOTTLENOSE DOLPHIN" },
+    { category: "Animal", phrase: "POLAR BEAR" },
+    { category: "Animal", phrase: "AFRICAN ELEPHANT" },
+    { category: "Animal", phrase: "GIANT PANDA" },
+    { category: "Animal", phrase: "KANGAROO" },
+    { category: "Animal", phrase: "ZEBRA" },
+    { category: "Animal", phrase: "KOALA BEAR" },
+    { category: "Animal", phrase: "AMERICAN ROBIN" },
+    { category: "Animal", phrase: "HOUSE CAT" },
+    { category: "Animal", phrase: "PRAIRIE DOG" },
+    { category: "Animal", phrase: "HONEY BEE" },
+    { category: "Animal", phrase: "LADYBUG" },
+    { category: "Animal", phrase: "COCKER SPANIEL" },
+    { category: "Animal", phrase: "TABBY CAT" },
+    { category: "Animal", phrase: "CARDINAL" },
+    { category: "Animal", phrase: "DRAGONFLY" },
+    { category: "Animal", phrase: "MOUNTAIN LION" },
+    { category: "Animal", phrase: "ARCTIC FOX" },
+    { category: "Animal", phrase: "PORCUPINE" },
+    { category: "Animal", phrase: "RACCOON" },
+    { category: "Animal", phrase: "GRAY SQUIRREL" },
+    { category: "Animal", phrase: "BARN OWL" },
+    { category: "Animal", phrase: "GOLDEN EAGLE" },
+    { category: "Animal", phrase: "RIVER OTTER" },
+    { category: "Animal", phrase: "BUFFALO HERD" },
+    { category: "Animal", phrase: "WORK HORSE" },
+    { category: "Animal", phrase: "DAIRY COW" },
+    { category: "Animal", phrase: "BARN SWALLOW" },
+    { category: "Animal", phrase: "HORNED OWL" },
+    { category: "Animal", phrase: "MOTHER GOOSE" },
   ],
   "Around the House": [
     { category: "Around the House", phrase: "ROCKING CHAIR" },
@@ -1248,6 +1365,34 @@ const wofPacks = {
     { category: "Around the House", phrase: "WINDOW CURTAINS" },
     { category: "Around the House", phrase: "GRANDFATHER CLOCK" },
     { category: "Around the House", phrase: "BOOKSHELF" },
+    { category: "Around the House", phrase: "COFFEE TABLE" },
+    { category: "Around the House", phrase: "THROW PILLOW" },
+    { category: "Around the House", phrase: "CEILING FAN" },
+    { category: "Around the House", phrase: "LIVING ROOM" },
+    { category: "Around the House", phrase: "FAMILY ROOM" },
+    { category: "Around the House", phrase: "GARDEN HOSE" },
+    { category: "Around the House", phrase: "GARAGE DOOR" },
+    { category: "Around the House", phrase: "LAUNDRY ROOM" },
+    { category: "Around the House", phrase: "KITCHEN SINK" },
+    { category: "Around the House", phrase: "BATHROOM MIRROR" },
+    { category: "Around the House", phrase: "HALL CLOSET" },
+    { category: "Around the House", phrase: "DINING TABLE" },
+    { category: "Around the House", phrase: "BACK PORCH" },
+    { category: "Around the House", phrase: "FRONT DOOR" },
+    { category: "Around the House", phrase: "STORM WINDOW" },
+    { category: "Around the House", phrase: "BEDSIDE LAMP" },
+    { category: "Around the House", phrase: "LINEN CLOSET" },
+    { category: "Around the House", phrase: "FAMILY PHOTO ALBUM" },
+    { category: "Around the House", phrase: "WALK IN PANTRY" },
+    { category: "Around the House", phrase: "CRYSTAL CHANDELIER" },
+    { category: "Around the House", phrase: "CEDAR CHEST" },
+    { category: "Around the House", phrase: "HOPE CHEST" },
+    { category: "Around the House", phrase: "QUILT ON THE BED" },
+    { category: "Around the House", phrase: "BRASS DOORKNOB" },
+    { category: "Around the House", phrase: "POTTED PLANT" },
+    { category: "Around the House", phrase: "AREA RUG" },
+    { category: "Around the House", phrase: "MANTEL CLOCK" },
+    { category: "Around the House", phrase: "FIRE PLACE" },
   ],
   "Fun Phrases": [
     { category: "Fun Phrase", phrase: "BREAK A LEG" },
@@ -1260,6 +1405,33 @@ const wofPacks = {
     { category: "Fun Phrase", phrase: "ONCE IN A BLUE MOON" },
     { category: "Fun Phrase", phrase: "THE WHOLE NINE YARDS" },
     { category: "Fun Phrase", phrase: "BITE THE BULLET" },
+    { category: "Fun Phrase", phrase: "COOL AS A CUCUMBER" },
+    { category: "Fun Phrase", phrase: "FIT AS A FIDDLE" },
+    { category: "Fun Phrase", phrase: "HAPPY AS A CLAM" },
+    { category: "Fun Phrase", phrase: "BUSY AS A BEE" },
+    { category: "Fun Phrase", phrase: "QUIET AS A MOUSE" },
+    { category: "Fun Phrase", phrase: "PROUD AS A PEACOCK" },
+    { category: "Fun Phrase", phrase: "SLY AS A FOX" },
+    { category: "Fun Phrase", phrase: "STRONG AS AN OX" },
+    { category: "Fun Phrase", phrase: "SOLID AS A ROCK" },
+    { category: "Fun Phrase", phrase: "LIGHT AS A FEATHER" },
+    { category: "Fun Phrase", phrase: "SNUG AS A BUG IN A RUG" },
+    { category: "Fun Phrase", phrase: "SPILL THE BEANS" },
+    { category: "Fun Phrase", phrase: "HIT THE NAIL ON THE HEAD" },
+    { category: "Fun Phrase", phrase: "LET THE CAT OUT OF THE BAG" },
+    { category: "Fun Phrase", phrase: "HOLD YOUR HORSES" },
+    { category: "Fun Phrase", phrase: "COSTS AN ARM AND A LEG" },
+    { category: "Fun Phrase", phrase: "A DIME A DOZEN" },
+    { category: "Fun Phrase", phrase: "HEAD OVER HEELS" },
+    { category: "Fun Phrase", phrase: "BARKING UP THE WRONG TREE" },
+    { category: "Fun Phrase", phrase: "ON CLOUD NINE" },
+    { category: "Fun Phrase", phrase: "IN A NUTSHELL" },
+    { category: "Fun Phrase", phrase: "OUT OF THE BLUE" },
+    { category: "Fun Phrase", phrase: "WHEN PIGS FLY" },
+    { category: "Fun Phrase", phrase: "A FISH OUT OF WATER" },
+    { category: "Fun Phrase", phrase: "GO THE EXTRA MILE" },
+    { category: "Fun Phrase", phrase: "PULLING YOUR LEG" },
+    { category: "Fun Phrase", phrase: "TWO PEAS IN A POD" },
   ],
   "Classic TV Shows": [
     { category: "Classic TV", phrase: "I LOVE LUCY" },
@@ -1277,6 +1449,41 @@ const wofPacks = {
     { category: "Classic TV", phrase: "WHEEL OF FORTUNE" },
     { category: "Classic TV", phrase: "JEOPARDY" },
     { category: "Classic TV", phrase: "THE GOLDEN GIRLS" },
+    { category: "Classic TV", phrase: "THE LAWRENCE WELK SHOW" },
+    { category: "Classic TV", phrase: "FATHER KNOWS BEST" },
+    { category: "Classic TV", phrase: "MISTER ROGERS NEIGHBORHOOD" },
+    { category: "Classic TV", phrase: "THE BEVERLY HILLBILLIES" },
+    { category: "Classic TV", phrase: "GREEN ACRES" },
+    { category: "Classic TV", phrase: "PETTICOAT JUNCTION" },
+    { category: "Classic TV", phrase: "MY THREE SONS" },
+    { category: "Classic TV", phrase: "THE BRADY BUNCH" },
+    { category: "Classic TV", phrase: "THE WALTONS" },
+    { category: "Classic TV", phrase: "LITTLE HOUSE ON THE PRAIRIE" },
+    { category: "Classic TV", phrase: "HEE HAW" },
+    { category: "Classic TV", phrase: "THE MARY TYLER MOORE SHOW" },
+    { category: "Classic TV", phrase: "ALL IN THE FAMILY" },
+    { category: "Classic TV", phrase: "SANFORD AND SON" },
+    { category: "Classic TV", phrase: "THE FLINTSTONES" },
+    { category: "Classic TV", phrase: "THE JEFFERSONS" },
+    { category: "Classic TV", phrase: "GET SMART" },
+    { category: "Classic TV", phrase: "DRAGNET" },
+    { category: "Classic TV", phrase: "PERRY MASON" },
+    { category: "Classic TV", phrase: "THE ROCKFORD FILES" },
+    { category: "Classic TV", phrase: "COLUMBO" },
+    { category: "Classic TV", phrase: "CHEERS" },
+    { category: "Classic TV", phrase: "DALLAS" },
+    { category: "Classic TV", phrase: "THE LOVE BOAT" },
+    { category: "Classic TV", phrase: "FANTASY ISLAND" },
+    { category: "Classic TV", phrase: "BEWITCHED" },
+    { category: "Classic TV", phrase: "I DREAM OF JEANNIE" },
+    { category: "Classic TV", phrase: "GILLIGANS ISLAND" },
+    { category: "Classic TV", phrase: "THE MUNSTERS" },
+    { category: "Classic TV", phrase: "THE ADDAMS FAMILY" },
+    { category: "Classic TV", phrase: "THE TWILIGHT ZONE" },
+    { category: "Classic TV", phrase: "STAR TREK" },
+    { category: "Classic TV", phrase: "THE TONIGHT SHOW" },
+    { category: "Classic TV", phrase: "MURDER SHE WROTE" },
+    { category: "Classic TV", phrase: "MATLOCK" },
   ],
   "Nostalgia (50s-70s)": [
     { category: "Nostalgia", phrase: "DRIVE IN MOVIE THEATER" },
@@ -1291,6 +1498,34 @@ const wofPacks = {
     { category: "Nostalgia", phrase: "ROLLER SKATING RINK" },
     { category: "Nostalgia", phrase: "HULA HOOP" },
     { category: "Nostalgia", phrase: "SUNDAY DRIVE" },
+    { category: "Nostalgia", phrase: "MILKMAN AT THE DOOR" },
+    { category: "Nostalgia", phrase: "FIVE AND DIME STORE" },
+    { category: "Nostalgia", phrase: "SATURDAY MATINEE" },
+    { category: "Nostalgia", phrase: "ROCK AND ROLL" },
+    { category: "Nostalgia", phrase: "JUKEBOX" },
+    { category: "Nostalgia", phrase: "MALT SHOP" },
+    { category: "Nostalgia", phrase: "BLACK AND WHITE TELEVISION" },
+    { category: "Nostalgia", phrase: "VICTROLA" },
+    { category: "Nostalgia", phrase: "ICE BOX" },
+    { category: "Nostalgia", phrase: "CLOTHESLINE" },
+    { category: "Nostalgia", phrase: "WRINGER WASHER" },
+    { category: "Nostalgia", phrase: "POLAROID CAMERA" },
+    { category: "Nostalgia", phrase: "VINYL RECORD" },
+    { category: "Nostalgia", phrase: "TYPEWRITER" },
+    { category: "Nostalgia", phrase: "MODEL T FORD" },
+    { category: "Nostalgia", phrase: "ELVIS PRESLEY" },
+    { category: "Nostalgia", phrase: "THE BEATLES" },
+    { category: "Nostalgia", phrase: "TICKER TAPE PARADE" },
+    { category: "Nostalgia", phrase: "PAPER BOY" },
+    { category: "Nostalgia", phrase: "SODA JERK" },
+    { category: "Nostalgia", phrase: "PARTY LINE TELEPHONE" },
+    { category: "Nostalgia", phrase: "CORNER GAS STATION" },
+    { category: "Nostalgia", phrase: "DOUBLE FEATURE FILM" },
+    { category: "Nostalgia", phrase: "SLINKY" },
+    { category: "Nostalgia", phrase: "ETCH A SKETCH" },
+    { category: "Nostalgia", phrase: "TUPPERWARE PARTY" },
+    { category: "Nostalgia", phrase: "FULLER BRUSH MAN" },
+    { category: "Nostalgia", phrase: "MAIL ORDER CATALOG" },
   ],
   "Holiday": [
     { category: "Holiday", phrase: "CANDY CANE" },
@@ -1305,6 +1540,27 @@ const wofPacks = {
     { category: "Holiday", phrase: "GINGERBREAD HOUSE" },
     { category: "Holiday", phrase: "SILENT NIGHT" },
     { category: "Holiday", phrase: "JINGLE BELLS" },
+    { category: "Holiday", phrase: "MISTLETOE" },
+    { category: "Holiday", phrase: "CHRISTMAS STOCKINGS" },
+    { category: "Holiday", phrase: "HAPPY NEW YEAR" },
+    { category: "Holiday", phrase: "MOTHERS DAY BOUQUET" },
+    { category: "Holiday", phrase: "FATHERS DAY GIFT" },
+    { category: "Holiday", phrase: "SAINT PATRICKS DAY PARADE" },
+    { category: "Holiday", phrase: "EASTER BASKET" },
+    { category: "Holiday", phrase: "LABOR DAY PICNIC" },
+    { category: "Holiday", phrase: "VETERANS DAY PARADE" },
+    { category: "Holiday", phrase: "MEMORIAL DAY" },
+    { category: "Holiday", phrase: "HALLOWEEN COSTUME" },
+    { category: "Holiday", phrase: "BIRTHDAY PARTY" },
+    { category: "Holiday", phrase: "SANTA CLAUS" },
+    { category: "Holiday", phrase: "RUDOLPH THE REINDEER" },
+    { category: "Holiday", phrase: "WREATH ON THE DOOR" },
+    { category: "Holiday", phrase: "EGGNOG BY THE FIRE" },
+    { category: "Holiday", phrase: "BARN DANCE" },
+    { category: "Holiday", phrase: "FAMILY REUNION" },
+    { category: "Holiday", phrase: "FIRECRACKERS" },
+    { category: "Holiday", phrase: "PARADE OF ROSES" },
+    { category: "Holiday", phrase: "CUPID AND HIS ARROW" },
   ],
   "Nature & Garden": [
     { category: "Nature", phrase: "SUNFLOWER" },
@@ -1319,6 +1575,168 @@ const wofPacks = {
     { category: "Nature", phrase: "FULL MOON" },
     { category: "Nature", phrase: "OCEAN BREEZE" },
     { category: "Nature", phrase: "MOUNTAIN MEADOW" },
+    { category: "Nature", phrase: "DAFFODIL" },
+    { category: "Nature", phrase: "TULIP GARDEN" },
+    { category: "Nature", phrase: "HONEYSUCKLE VINE" },
+    { category: "Nature", phrase: "DOGWOOD TREE" },
+    { category: "Nature", phrase: "MAPLE LEAF" },
+    { category: "Nature", phrase: "FOREST PATH" },
+    { category: "Nature", phrase: "COUNTRY MEADOW" },
+    { category: "Nature", phrase: "WHITE BIRCH TREE" },
+    { category: "Nature", phrase: "LILAC BUSH" },
+    { category: "Nature", phrase: "BUTTERFLY GARDEN" },
+    { category: "Nature", phrase: "WINTER WONDERLAND" },
+    { category: "Nature", phrase: "FIELD OF DAISIES" },
+    { category: "Nature", phrase: "MORNING GLORY" },
+    { category: "Nature", phrase: "HARVEST MOON" },
+    { category: "Nature", phrase: "SNOW COVERED PINES" },
+    { category: "Nature", phrase: "MOUNTAIN STREAM" },
+    { category: "Nature", phrase: "QUIET COUNTRYSIDE" },
+    { category: "Nature", phrase: "APPLE ORCHARD" },
+    { category: "Nature", phrase: "PUMPKIN PATCH" },
+    { category: "Nature", phrase: "OAK TREE IN BLOOM" },
+    { category: "Nature", phrase: "EVENING SUNSET" },
+    { category: "Nature", phrase: "DEWDROPS ON THE GRASS" },
+    { category: "Nature", phrase: "GENTLE BREEZE" },
+    { category: "Nature", phrase: "STARRY NIGHT" },
+    { category: "Nature", phrase: "BABBLING CREEK" },
+  ],
+  "Classic Movies": [
+    { category: "Movie", phrase: "THE WIZARD OF OZ" },
+    { category: "Movie", phrase: "GONE WITH THE WIND" },
+    { category: "Movie", phrase: "ITS A WONDERFUL LIFE" },
+    { category: "Movie", phrase: "CASABLANCA" },
+    { category: "Movie", phrase: "SINGIN IN THE RAIN" },
+    { category: "Movie", phrase: "THE SOUND OF MUSIC" },
+    { category: "Movie", phrase: "WEST SIDE STORY" },
+    { category: "Movie", phrase: "MARY POPPINS" },
+    { category: "Movie", phrase: "BREAKFAST AT TIFFANYS" },
+    { category: "Movie", phrase: "ROMAN HOLIDAY" },
+    { category: "Movie", phrase: "TO KILL A MOCKINGBIRD" },
+    { category: "Movie", phrase: "THE GODFATHER" },
+    { category: "Movie", phrase: "ROCKY" },
+    { category: "Movie", phrase: "STAR WARS" },
+    { category: "Movie", phrase: "SOME LIKE IT HOT" },
+    { category: "Movie", phrase: "AN AFFAIR TO REMEMBER" },
+    { category: "Movie", phrase: "DOCTOR ZHIVAGO" },
+    { category: "Movie", phrase: "BEN HUR" },
+    { category: "Movie", phrase: "THE TEN COMMANDMENTS" },
+    { category: "Movie", phrase: "MY FAIR LADY" },
+    { category: "Movie", phrase: "FIDDLER ON THE ROOF" },
+    { category: "Movie", phrase: "THE KING AND I" },
+    { category: "Movie", phrase: "ON THE WATERFRONT" },
+    { category: "Movie", phrase: "A STREETCAR NAMED DESIRE" },
+    { category: "Movie", phrase: "GUYS AND DOLLS" },
+    { category: "Movie", phrase: "WHITE CHRISTMAS" },
+    { category: "Movie", phrase: "MIRACLE ON THIRTY FOURTH STREET" },
+    { category: "Movie", phrase: "THE BIRDS" },
+    { category: "Movie", phrase: "REAR WINDOW" },
+    { category: "Movie", phrase: "PSYCHO" },
+  ],
+  "Songs Everyone Knows": [
+    { category: "Song", phrase: "YOU ARE MY SUNSHINE" },
+    { category: "Song", phrase: "TAKE ME OUT TO THE BALL GAME" },
+    { category: "Song", phrase: "THIS LAND IS YOUR LAND" },
+    { category: "Song", phrase: "AMERICA THE BEAUTIFUL" },
+    { category: "Song", phrase: "WHEN THE SAINTS GO MARCHING IN" },
+    { category: "Song", phrase: "OH SUSANNA" },
+    { category: "Song", phrase: "HOME ON THE RANGE" },
+    { category: "Song", phrase: "IVE BEEN WORKING ON THE RAILROAD" },
+    { category: "Song", phrase: "SWING LOW SWEET CHARIOT" },
+    { category: "Song", phrase: "ROW ROW ROW YOUR BOAT" },
+    { category: "Song", phrase: "DAISY DAISY" },
+    { category: "Song", phrase: "WHEN IRISH EYES ARE SMILING" },
+    { category: "Song", phrase: "GOD BLESS AMERICA" },
+    { category: "Song", phrase: "THE STAR SPANGLED BANNER" },
+    { category: "Song", phrase: "MY BONNIE LIES OVER THE OCEAN" },
+    { category: "Song", phrase: "DOWN BY THE OLD MILL STREAM" },
+    { category: "Song", phrase: "HAPPY BIRTHDAY TO YOU" },
+    { category: "Song", phrase: "IN THE GOOD OLD SUMMERTIME" },
+    { category: "Song", phrase: "BICYCLE BUILT FOR TWO" },
+    { category: "Song", phrase: "OVER THE RAINBOW" },
+    { category: "Song", phrase: "WHITE CHRISTMAS" },
+    { category: "Song", phrase: "MOON RIVER" },
+    { category: "Song", phrase: "AMAZING GRACE" },
+    { category: "Song", phrase: "DANNY BOY" },
+    { category: "Song", phrase: "BLUE SUEDE SHOES" },
+    { category: "Song", phrase: "ROCK AROUND THE CLOCK" },
+    { category: "Song", phrase: "SINGIN IN THE RAIN" },
+    { category: "Song", phrase: "WHAT A WONDERFUL WORLD" },
+  ],
+  "In the Kitchen": [
+    { category: "Kitchen", phrase: "ROLLING PIN" },
+    { category: "Kitchen", phrase: "COOKIE JAR" },
+    { category: "Kitchen", phrase: "COFFEE MAKER" },
+    { category: "Kitchen", phrase: "TOASTER OVEN" },
+    { category: "Kitchen", phrase: "MIXING BOWL" },
+    { category: "Kitchen", phrase: "MEASURING CUP" },
+    { category: "Kitchen", phrase: "CAST IRON SKILLET" },
+    { category: "Kitchen", phrase: "TEAPOT AND KETTLE" },
+    { category: "Kitchen", phrase: "WOODEN SPOON" },
+    { category: "Kitchen", phrase: "CUTTING BOARD" },
+    { category: "Kitchen", phrase: "SPICE RACK" },
+    { category: "Kitchen", phrase: "PIE PLATE" },
+    { category: "Kitchen", phrase: "CASSEROLE DISH" },
+    { category: "Kitchen", phrase: "DISH TOWEL" },
+    { category: "Kitchen", phrase: "APRON STRINGS" },
+    { category: "Kitchen", phrase: "OVEN MITT" },
+    { category: "Kitchen", phrase: "SALT AND PEPPER SHAKERS" },
+    { category: "Kitchen", phrase: "SUGAR BOWL" },
+    { category: "Kitchen", phrase: "CHINA CABINET" },
+    { category: "Kitchen", phrase: "BREAD BASKET" },
+    { category: "Kitchen", phrase: "GOOD SILVERWARE" },
+    { category: "Kitchen", phrase: "BUTTER DISH" },
+    { category: "Kitchen", phrase: "DOUBLE BOILER" },
+    { category: "Kitchen", phrase: "ELECTRIC MIXER" },
+  ],
+  "Hobbies & Pastimes": [
+    { category: "Hobby", phrase: "KNITTING NEEDLES" },
+    { category: "Hobby", phrase: "CROSSWORD PUZZLE" },
+    { category: "Hobby", phrase: "JIGSAW PUZZLE" },
+    { category: "Hobby", phrase: "BOOK CLUB" },
+    { category: "Hobby", phrase: "BALLROOM DANCING" },
+    { category: "Hobby", phrase: "PLAYING CARDS" },
+    { category: "Hobby", phrase: "BIRD WATCHING" },
+    { category: "Hobby", phrase: "STAMP COLLECTING" },
+    { category: "Hobby", phrase: "WOODWORKING" },
+    { category: "Hobby", phrase: "GOING FISHING" },
+    { category: "Hobby", phrase: "BAKING COOKIES" },
+    { category: "Hobby", phrase: "GARDENING" },
+    { category: "Hobby", phrase: "READING THE NEWSPAPER" },
+    { category: "Hobby", phrase: "PAINT BY NUMBERS" },
+    { category: "Hobby", phrase: "QUILTING BEE" },
+    { category: "Hobby", phrase: "BINGO NIGHT" },
+    { category: "Hobby", phrase: "SUNDAY CROSSWORD" },
+    { category: "Hobby", phrase: "WATERCOLOR PAINTING" },
+    { category: "Hobby", phrase: "SCRAPBOOKING" },
+    { category: "Hobby", phrase: "COIN COLLECTING" },
+    { category: "Hobby", phrase: "WRITING LETTERS" },
+    { category: "Hobby", phrase: "LISTENING TO THE RADIO" },
+    { category: "Hobby", phrase: "PUTTING TOGETHER A MODEL" },
+  ],
+  "Things You Wear": [
+    { category: "Clothing", phrase: "WINTER COAT" },
+    { category: "Clothing", phrase: "COWBOY HAT" },
+    { category: "Clothing", phrase: "WORK BOOTS" },
+    { category: "Clothing", phrase: "BLUE JEANS" },
+    { category: "Clothing", phrase: "BOW TIE" },
+    { category: "Clothing", phrase: "PEARL NECKLACE" },
+    { category: "Clothing", phrase: "WEDDING RING" },
+    { category: "Clothing", phrase: "SUNDAY HAT" },
+    { category: "Clothing", phrase: "WOOL SWEATER" },
+    { category: "Clothing", phrase: "LEATHER GLOVES" },
+    { category: "Clothing", phrase: "FLANNEL SHIRT" },
+    { category: "Clothing", phrase: "POCKET WATCH" },
+    { category: "Clothing", phrase: "READING GLASSES" },
+    { category: "Clothing", phrase: "SCARF AND MITTENS" },
+    { category: "Clothing", phrase: "RAIN COAT" },
+    { category: "Clothing", phrase: "SUNDAY BEST" },
+    { category: "Clothing", phrase: "POLKA DOT DRESS" },
+    { category: "Clothing", phrase: "STRAW HAT" },
+    { category: "Clothing", phrase: "PATENT LEATHER SHOES" },
+    { category: "Clothing", phrase: "GOLD WATCH" },
+    { category: "Clothing", phrase: "FUR COAT" },
+    { category: "Clothing", phrase: "WHITE GLOVES" },
   ],
 };
 
@@ -1615,6 +2033,7 @@ function renderLetterBoard() {
     cell.className = 'letter-board-cell' + (WOF_VOWELS.has(letter) ? ' vowel' : '');
     cell.textContent = letter;
     cell.id = 'lb-' + letter;
+    cell.addEventListener('click', () => guessLetter(letter));
     board.appendChild(cell);
   }
 }
@@ -1692,29 +2111,20 @@ function wofRevealRandom() {
   checkAllRevealed();
 }
 
-// Keyboard letter guessing
-document.addEventListener('keydown', (e) => {
+function guessLetter(letter) {
   if (!document.getElementById('wof-screen').classList.contains('active')) return;
-  if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
   if (document.getElementById('wof-modal').classList.contains('active')) return;
   if (document.getElementById('wof-solve-modal').classList.contains('active')) return;
-
-  const letter = e.key.toUpperCase();
   if (!/^[A-Z]$/.test(letter)) return;
 
-  e.preventDefault();
-
-  // Must select a spin value first
   if (wofSpinValue === 0) {
     document.getElementById('wof-spin-prompt').classList.remove('hidden');
     document.getElementById('wof-spin-result').textContent = 'Tap a spin value first!';
     return;
   }
 
-  // Don't allow guessing already-used letters
   if (usedLetters.has(letter)) return;
 
-  // Enforce vowel/consonant rule
   const isVowel = WOF_VOWELS.has(letter);
   if (wofSpinValue === 100 && !isVowel) {
     document.getElementById('wof-spin-result').textContent =
@@ -1738,7 +2148,6 @@ document.addEventListener('keydown', (e) => {
     }
   });
 
-  // Update letter board
   const lbCell = document.getElementById('lb-' + letter);
   if (lbCell) {
     lbCell.classList.add(matchCount > 0 ? 'hit' : 'miss');
@@ -1759,11 +2168,9 @@ document.addEventListener('keydown', (e) => {
   usedLetters.add(letter);
   updateWofScoreDisplay();
 
-  // Reset spin value for next turn
   wofSpinValue = 0;
   document.querySelectorAll('.spin-btn').forEach(b => b.classList.remove('active'));
 
-  // Show prompt again after a moment
   setTimeout(() => {
     const hidden = document.querySelectorAll('.wof-tile.letter:not(.revealed)');
     if (hidden.length > 0) {
@@ -1772,6 +2179,15 @@ document.addEventListener('keydown', (e) => {
   }, 1500);
 
   checkAllRevealed();
+}
+
+document.addEventListener('keydown', (e) => {
+  if (!document.getElementById('wof-screen').classList.contains('active')) return;
+  if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+  const letter = e.key.toUpperCase();
+  if (!/^[A-Z]$/.test(letter)) return;
+  e.preventDefault();
+  guessLetter(letter);
 });
 
 let usedLetters = new Set();
