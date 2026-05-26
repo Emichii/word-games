@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Price Is Right!</title>
+  <link rel="stylesheet" href="styles.css?v=13">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+
+    <!-- ========== TOP BAR ========== -->
+    <div class="top-bar">
+      <div class="hamburger-wrap">
+        <button id="hamburger-btn" class="hamburger-btn" aria-label="Menu">&#9776;</button>
+        <div id="hamburger-menu" class="hamburger-menu hidden">
+          <button id="menu-home" class="menu-item">Main Menu</button>
+          <button id="menu-custom" class="menu-item">Add Your Own Items</button>
+          <a href="../word_games.html" class="menu-item">Return to Games</a>
+        </div>
+      </div>
+      <h1 class="title" id="show-title">THE PRICE IS RIGHT</h1>
+      <div class="top-bar-right">
+        <span id="round-label" class="round-label hidden"></span>
+      </div>
+    </div>
+
+    <!-- ========== HOME SCREEN ========== -->
+    <section class="screen active" id="screen-home">
+      <p class="tagline">Pick a game to play</p>
+      <div class="game-grid">
+        <button class="game-card card-contestants" data-game="contestants">
+          <div class="card-icon">🎤</div>
+          <div class="card-name">Contestants' Row</div>
+          <div class="card-desc">Bid on a prize — closest without going over wins</div>
+        </button>
+        <button class="game-card card-plinko" data-game="plinko">
+          <div class="card-icon">🎯</div>
+          <div class="card-name">Plinko!</div>
+          <div class="card-desc">Drop chips down the board for cash prizes</div>
+        </button>
+        <button class="game-card card-wheel" data-game="wheel">
+          <div class="card-icon">🎡</div>
+          <div class="card-name">The Big Wheel</div>
+          <div class="card-desc">Spin to get closest to one dollar</div>
+        </button>
+        <button class="game-card card-cliff" data-game="cliff">
+          <div class="card-icon">🏔️</div>
+          <div class="card-name">Cliff Hangers</div>
+          <div class="card-desc">Guess prices to save the yodeling climber!</div>
+        </button>
+      </div>
+    </section>
+
+    <!-- ========== CONTESTANTS' ROW ========== -->
+    <section class="screen" id="screen-contestants">
+      <div class="stage-row">
+        <div class="item-display" id="cr-item-display">
+          <div class="item-photo" id="cr-item-photo"><span class="item-emoji">🎁</span></div>
+          <div class="item-info">
+            <h2 class="item-name" id="cr-item-name">Click "New Item" to begin</h2>
+            <p class="item-desc" id="cr-item-desc"></p>
+            <p class="item-theme" id="cr-item-theme"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bidders-row" id="cr-bidders">
+        <!-- 4 bidder slots injected by JS -->
+      </div>
+
+      <div class="reveal-area hidden" id="cr-reveal">
+        <p class="reveal-label">Actual Retail Price:</p>
+        <p class="reveal-price" id="cr-actual-price">$0</p>
+        <p class="reveal-winner" id="cr-winner"></p>
+      </div>
+
+      <div class="controls-row">
+        <button class="btn btn-primary" id="cr-new-item">🎲 New Item</button>
+        <button class="btn btn-warm" id="cr-reveal-btn" disabled>💰 Reveal Price</button>
+        <button class="btn btn-blue" id="cr-manage-players">👥 Manage Players</button>
+        <button class="btn btn-outline" id="cr-back">← Back</button>
+      </div>
+    </section>
+
+    <!-- ========== PLINKO ========== -->
+    <section class="screen" id="screen-plinko">
+      <div class="plinko-wrap">
+        <div class="plinko-side">
+          <div class="plinko-stats">
+            <div class="stat-block">
+              <div class="stat-label">Chip</div>
+              <div class="stat-value" id="pk-chip-num">1 of 5</div>
+            </div>
+            <div class="stat-block stat-total">
+              <div class="stat-label">Total Won</div>
+              <div class="stat-value" id="pk-total">$0</div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-label">Last Drop</div>
+              <div class="stat-value" id="pk-last">—</div>
+            </div>
+          </div>
+          <div class="plinko-instructions">
+            <p><strong>How to play:</strong></p>
+            <p>Click any column at the top of the board to drop a chip. Watch it bounce!</p>
+            <p>You have 5 chips. The slot it lands in is your prize.</p>
+          </div>
+          <div class="controls-row controls-stack">
+            <button class="btn btn-primary" id="pk-new-game">🔄 New Game (5 chips)</button>
+            <button class="btn btn-outline" id="pk-back">← Back</button>
+          </div>
+        </div>
+        <div class="plinko-board-wrap">
+          <canvas id="pk-canvas" width="540" height="720"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== BIG WHEEL ========== -->
+    <section class="screen" id="screen-wheel">
+      <div class="wheel-wrap">
+        <div class="wheel-side">
+          <div class="wheel-spinners" id="bw-spinners">
+            <!-- 3 spinner slots injected by JS -->
+          </div>
+          <div class="wheel-result hidden" id="bw-result">
+            <p class="result-label" id="bw-result-label">—</p>
+          </div>
+          <div class="controls-row controls-stack">
+            <button class="btn btn-primary" id="bw-spin">🎡 SPIN!</button>
+            <button class="btn btn-warm hidden" id="bw-second-spin">Second Spin</button>
+            <button class="btn btn-primary hidden" id="bw-next-player">Next Player</button>
+            <button class="btn btn-primary hidden" id="bw-new-round">New Round</button>
+            <button class="btn btn-blue" id="bw-manage-players">👥 Manage Players</button>
+            <button class="btn btn-outline" id="bw-back">← Back</button>
+          </div>
+        </div>
+        <div class="wheel-board-wrap">
+          <div class="wheel-pointer">▼</div>
+          <svg id="bw-svg" viewBox="-260 -260 520 520">
+            <g id="bw-wheel-group"></g>
+            <circle cx="0" cy="0" r="32" fill="#ffd700" stroke="#0a0a1f" stroke-width="3"/>
+            <circle cx="0" cy="0" r="8" fill="#0a0a1f"/>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== CLIFF HANGERS ========== -->
+    <section class="screen" id="screen-cliff">
+      <div class="cliff-wrap">
+        <div class="cliff-side">
+          <div class="item-display item-display-small" id="ch-item-display">
+            <div class="item-photo"><span class="item-emoji" id="ch-emoji">🎁</span></div>
+            <div class="item-info">
+              <h3 class="item-name" id="ch-item-name">Press "Start Round"</h3>
+              <p class="item-desc" id="ch-item-desc"></p>
+            </div>
+          </div>
+          <div class="ch-guess-area">
+            <label for="ch-guess-input" class="guess-label">Resident's Guess:</label>
+            <div class="guess-input-row">
+              <span class="dollar-sign">$</span>
+              <input type="number" id="ch-guess-input" placeholder="0.00" step="0.01" min="0">
+              <button class="btn btn-primary" id="ch-submit-guess">Submit</button>
+            </div>
+            <p class="ch-feedback" id="ch-feedback"></p>
+          </div>
+          <div class="ch-progress" id="ch-progress">
+            <span class="ch-item-dot" data-i="0">1</span>
+            <span class="ch-item-dot" data-i="1">2</span>
+            <span class="ch-item-dot" data-i="2">3</span>
+          </div>
+          <div class="controls-row controls-stack">
+            <button class="btn btn-primary" id="ch-start">▶ Start Round</button>
+            <button class="btn btn-outline" id="ch-back">← Back</button>
+          </div>
+        </div>
+        <div class="cliff-mountain-wrap">
+          <svg id="ch-svg" viewBox="0 0 320 600"></svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== CUSTOM ITEMS EDITOR ========== -->
+    <section class="screen" id="screen-custom">
+      <div class="custom-wrap">
+        <h2>Add Your Own Items</h2>
+        <p class="custom-help">
+          Add items relevant to your residents (favorite local store prices, vintage memories, etc.).
+          Items are saved on this device and appear in all four games.
+        </p>
+        <div class="custom-form">
+          <label>Item Name<input type="text" id="cust-name" placeholder="e.g., Coffee at the diner"></label>
+          <label>Description<input type="text" id="cust-desc" placeholder="e.g., One cup, with cream"></label>
+          <label>Price ($)<input type="number" id="cust-price" step="0.01" min="0" placeholder="2.50"></label>
+          <label>Emoji<input type="text" id="cust-emoji" placeholder="☕" maxlength="4"></label>
+          <label>Theme
+            <select id="cust-theme">
+              <option value="grocery">Grocery / Everyday</option>
+              <option value="classic">Classic Prize</option>
+              <option value="nostalgic">Nostalgic</option>
+            </select>
+          </label>
+          <button class="btn btn-primary" id="cust-add">+ Add Item</button>
+        </div>
+        <h3>Your Custom Items</h3>
+        <div class="custom-list" id="custom-list"></div>
+        <div class="controls-row">
+          <button class="btn btn-outline" id="cust-back">← Back</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ========== CELEBRATION OVERLAY ========== -->
+  <div id="celebration-overlay" class="hidden">
+    <div class="confetti-container" id="confetti-container"></div>
+    <div class="celebration-content">
+      <h1 class="celebration-title">Congratulations!</h1>
+      <div class="celebration-prize">
+        <div class="prize-label">You won</div>
+        <div class="prize-amount" id="celeb-amount">$0</div>
+      </div>
+      <div class="celebration-buttons">
+        <button id="celeb-play-again" class="btn-celeb">▶ Play Again</button>
+        <button id="celeb-menu" class="btn-celeb btn-celeb-menu">← Main Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== GAME SETUP MODAL (rules + optional players) ========== -->
+  <div id="player-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <h2 id="pm-title">Game</h2>
+
+      <!-- Rules section -->
+      <div class="pm-rules" id="pm-rules">
+        <div class="pm-rules-header">📋 How to play</div>
+        <ul class="pm-rules-list" id="pm-rules-list"></ul>
+      </div>
+
+      <!-- Player setup section (hidden for games without named players) -->
+      <div id="pm-players-section">
+        <div class="pm-section-header">👥 Who's playing?</div>
+        <p class="modal-help">Type each player's name. You can change this any time — useful if someone joins or leaves.</p>
+
+        <div class="pm-count-row">
+          <span class="pm-count-label">Number of players:</span>
+          <button class="btn btn-outline pm-count-btn" id="pm-minus" aria-label="Fewer players">−</button>
+          <span class="pm-count-value" id="pm-count-value">4</span>
+          <button class="btn btn-outline pm-count-btn" id="pm-plus" aria-label="More players">+</button>
+        </div>
+
+        <div class="pm-names" id="pm-names">
+          <!-- name inputs injected by JS -->
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-outline" id="pm-cancel">Cancel</button>
+        <button class="btn btn-primary" id="pm-save">✓ Start Game</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js?v=13"></script>
+  <script src="app.js?v=13"></script>
+</body>
+</html>

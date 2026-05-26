@@ -1,0 +1,1056 @@
+/* ========== RESET & BASE ========== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* The Price Is Right palette — bright primaries on deep blue */
+  --tpir-blue:    #0a2463;
+  --tpir-blue-2:  #15327e;
+  --tpir-blue-dk: #051640;
+  --tpir-yellow:  #ffd700;
+  --tpir-red:     #e63946;
+  --tpir-orange:  #ff8c1a;
+  --tpir-green:   #4caf50;
+  --tpir-pink:    #ff4081;
+  --tpir-cyan:    #29b6f6;
+  --text-light:   #ffffff;
+  --text-dim:     #b8c4e6;
+  --card-bg:      rgba(255,255,255,0.08);
+  --card-border:  rgba(255,255,255,0.18);
+}
+
+html, body { height: 100%; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: radial-gradient(ellipse at top, var(--tpir-blue-2) 0%, var(--tpir-blue) 50%, var(--tpir-blue-dk) 100%);
+  color: var(--text-light);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.hidden { display: none !important; }
+
+/* ========== TOP BAR ========== */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.15) 100%);
+  border-bottom: 3px solid var(--tpir-yellow);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.title {
+  font-family: 'Fredoka One', 'Nunito', sans-serif;
+  font-size: 38px;
+  letter-spacing: 2px;
+  color: var(--tpir-yellow);
+  text-shadow: 0 0 18px rgba(255,215,0,0.45), 3px 3px 0 var(--tpir-red);
+  flex: 1;
+  text-align: center;
+}
+
+.top-bar-right { min-width: 80px; text-align: right; }
+
+.round-label {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--tpir-yellow);
+  background: rgba(0,0,0,0.3);
+  padding: 6px 14px;
+  border-radius: 8px;
+}
+
+/* ========== HAMBURGER ========== */
+.hamburger-wrap { position: relative; min-width: 80px; }
+
+.hamburger-btn {
+  background: transparent;
+  border: 2px solid var(--text-dim);
+  color: var(--text-light);
+  font-size: 26px;
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.hamburger-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--text-light); }
+
+.hamburger-menu {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  background: var(--tpir-blue-2);
+  border: 2px solid var(--tpir-yellow);
+  border-radius: 10px;
+  padding: 8px;
+  min-width: 240px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  z-index: 60;
+}
+
+.menu-item {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  color: var(--text-light);
+  font-size: 18px;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 6px;
+  font-family: inherit;
+}
+.menu-item:hover { background: rgba(255,215,0,0.15); }
+
+/* ========== SCREENS ========== */
+.screen {
+  display: none;
+  flex-direction: column;
+  padding: 28px;
+  min-height: calc(100vh - 80px);
+}
+.screen.active { display: flex; }
+
+/* ========== HOME SCREEN ========== */
+#screen-home {
+  align-items: center;
+  justify-content: flex-start;
+  gap: 18px;
+  padding-top: 20px;
+  padding-bottom: 24px;
+}
+
+.tagline {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 32px;
+  color: var(--tpir-yellow);
+  text-shadow: 2px 2px 0 var(--tpir-red), 4px 4px 10px rgba(0,0,0,0.5);
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  max-width: 980px;
+  width: 100%;
+}
+
+.game-card {
+  background: linear-gradient(135deg, var(--tpir-blue-2), var(--tpir-blue));
+  border: 4px solid var(--tpir-yellow);
+  border-radius: 20px;
+  padding: 20px 22px;
+  cursor: pointer;
+  color: var(--text-light);
+  text-align: center;
+  transition: all 0.2s;
+  font-family: inherit;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+}
+.game-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.55), 0 0 28px rgba(255,215,0,0.3);
+}
+
+.card-contestants { border-color: var(--tpir-yellow); }
+.card-plinko      { border-color: var(--tpir-red); }
+.card-wheel       { border-color: var(--tpir-cyan); }
+.card-cliff       { border-color: var(--tpir-green); }
+
+.card-icon { font-size: 56px; margin-bottom: 6px; line-height: 1; }
+.card-name {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 28px;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+  color: var(--tpir-yellow);
+}
+.card-desc { font-size: 16px; color: var(--text-dim); }
+
+/* ========== BUTTONS ========== */
+.btn {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.02em;
+  color: white;
+}
+.btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.4); }
+.btn:active:not(:disabled) { transform: translateY(0); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-primary { background: var(--tpir-red); }
+.btn-warm    { background: var(--tpir-orange); color: #1a1a1a; }
+.btn-blue    { background: var(--tpir-cyan); color: #0a0a1f; }
+.btn-green   { background: var(--tpir-green); }
+.btn-outline { background: transparent; border: 2px solid var(--text-dim); color: var(--text-dim); }
+.btn-outline:hover { border-color: var(--text-light); color: var(--text-light); }
+
+.controls-row {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.controls-stack { flex-direction: column; align-items: stretch; }
+.controls-stack .btn { width: 100%; }
+
+/* ========== ITEM DISPLAY (shared) ========== */
+.stage-row { display: flex; justify-content: center; margin-bottom: 24px; }
+
+.item-display {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  background: var(--card-bg);
+  border: 3px solid var(--tpir-yellow);
+  border-radius: 24px;
+  padding: 28px 36px;
+  max-width: 1000px;
+  width: 100%;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.item-display-small { padding: 16px 22px; gap: 18px; }
+
+.item-photo {
+  width: 200px;
+  height: 200px;
+  flex-shrink: 0;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 3px solid rgba(255,255,255,0.3);
+}
+.item-display-small .item-photo { width: 120px; height: 120px; }
+
+.item-photo img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.item-emoji { font-size: 130px; line-height: 1; }
+.item-display-small .item-emoji { font-size: 80px; }
+
+.item-info { flex: 1; min-width: 0; }
+
+.item-name {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 44px;
+  color: var(--text-light);
+  margin-bottom: 8px;
+  line-height: 1.1;
+}
+.item-display-small .item-name { font-size: 28px; }
+
+.item-desc {
+  font-size: 22px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+.item-display-small .item-desc { font-size: 17px; }
+
+.item-theme {
+  display: inline-block;
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--tpir-blue-dk);
+  background: var(--tpir-yellow);
+  padding: 4px 12px;
+  border-radius: 8px;
+}
+
+/* ========== CONTESTANTS' ROW ========== */
+.bidders-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin: 20px 0;
+  max-width: 1100px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.bidder-slot {
+  background: var(--card-bg);
+  border: 3px solid var(--card-border);
+  border-radius: 16px;
+  padding: 18px;
+  text-align: center;
+  transition: all 0.2s;
+}
+.bidder-slot.winner {
+  border-color: var(--tpir-yellow);
+  background: rgba(255,215,0,0.18);
+  box-shadow: 0 0 28px rgba(255,215,0,0.5);
+}
+.bidder-slot.over {
+  opacity: 0.45;
+  border-color: var(--tpir-red);
+}
+
+.bidder-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--tpir-yellow);
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.bidder-input-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: white;
+  border-radius: 10px;
+  padding: 6px 10px;
+}
+.bidder-input-row .dollar-sign {
+  color: #0a2463;
+  font-size: 22px;
+  font-weight: 800;
+}
+.bidder-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 26px;
+  font-weight: 800;
+  color: #0a2463;
+  font-family: inherit;
+  width: 100%;
+  min-width: 0;
+  background: transparent;
+}
+
+.bidder-status {
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  min-height: 22px;
+}
+
+.reveal-area {
+  text-align: center;
+  background: linear-gradient(180deg, rgba(255,215,0,0.2), rgba(255,215,0,0.05));
+  border: 3px solid var(--tpir-yellow);
+  border-radius: 20px;
+  padding: 24px;
+  margin: 16px auto;
+  max-width: 700px;
+  animation: pop-in 0.4s ease-out;
+}
+
+@keyframes pop-in {
+  0% { transform: scale(0.7); opacity: 0; }
+  60% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+.reveal-label {
+  font-size: 22px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--text-dim);
+}
+.reveal-price {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 80px;
+  color: var(--tpir-yellow);
+  text-shadow: 3px 3px 0 var(--tpir-red);
+  margin: 8px 0;
+}
+.reveal-winner {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-light);
+  margin-top: 8px;
+}
+
+/* ========== PLINKO ========== */
+.plinko-wrap {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  align-items: start;
+}
+
+.plinko-side { display: flex; flex-direction: column; gap: 20px; }
+
+.plinko-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.stat-block {
+  background: var(--card-bg);
+  border: 2px solid var(--card-border);
+  border-radius: 14px;
+  padding: 14px;
+  text-align: center;
+}
+.stat-block.stat-total {
+  grid-column: 1 / -1;
+  border-color: var(--tpir-yellow);
+  background: rgba(255,215,0,0.12);
+}
+.stat-label {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+}
+.stat-value {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 32px;
+  color: var(--tpir-yellow);
+  margin-top: 4px;
+}
+.stat-total .stat-value { font-size: 42px; }
+
+.plinko-instructions {
+  background: var(--card-bg);
+  border: 2px solid var(--card-border);
+  border-radius: 14px;
+  padding: 16px 20px;
+  font-size: 17px;
+  line-height: 1.5;
+}
+.plinko-instructions p { margin-bottom: 6px; }
+.plinko-instructions strong { color: var(--tpir-yellow); }
+
+.plinko-board-wrap {
+  display: flex;
+  justify-content: center;
+  background: rgba(0,0,0,0.3);
+  border-radius: 20px;
+  padding: 16px;
+  border: 3px solid var(--tpir-red);
+}
+
+#pk-canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  cursor: crosshair;
+}
+
+/* ========== BIG WHEEL ========== */
+.wheel-wrap {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  align-items: center;
+}
+
+.wheel-side { display: flex; flex-direction: column; gap: 18px; }
+
+.wheel-spinners {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.spinner-card {
+  background: var(--card-bg);
+  border: 3px solid var(--card-border);
+  border-radius: 14px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s;
+}
+.spinner-card.active {
+  border-color: var(--tpir-yellow);
+  background: rgba(255,215,0,0.12);
+}
+.spinner-card.busted { opacity: 0.5; border-color: var(--tpir-red); }
+.spinner-card.winner {
+  border-color: var(--tpir-yellow);
+  background: rgba(255,215,0,0.25);
+  box-shadow: 0 0 24px rgba(255,215,0,0.6);
+}
+
+.spinner-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--tpir-yellow);
+  letter-spacing: 1px;
+}
+.spinner-score {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 32px;
+  color: var(--text-light);
+}
+.spinner-spins {
+  font-size: 13px;
+  color: var(--text-dim);
+  text-align: right;
+}
+
+.wheel-result {
+  text-align: center;
+  background: linear-gradient(180deg, rgba(255,215,0,0.2), rgba(255,215,0,0.05));
+  border: 3px solid var(--tpir-yellow);
+  border-radius: 16px;
+  padding: 18px;
+}
+.result-label {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 28px;
+  color: var(--tpir-yellow);
+}
+
+.wheel-board-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.wheel-pointer {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 56px;
+  color: var(--tpir-red);
+  text-shadow: 0 0 10px rgba(0,0,0,0.5);
+  z-index: 5;
+  line-height: 1;
+}
+#bw-svg {
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.5));
+}
+#bw-wheel-group { transform-origin: 0 0; transition: transform 4s cubic-bezier(0.17, 0.67, 0.16, 1); }
+
+/* ========== CLIFF HANGERS ========== */
+.cliff-wrap {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  align-items: start;
+}
+
+.cliff-side { display: flex; flex-direction: column; gap: 18px; }
+
+.ch-guess-area {
+  background: var(--card-bg);
+  border: 3px solid var(--card-border);
+  border-radius: 16px;
+  padding: 20px;
+}
+.guess-label {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-dim);
+  display: block;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+.guess-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border-radius: 12px;
+  padding: 8px 14px;
+  margin-bottom: 12px;
+}
+.dollar-sign {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--tpir-blue-dk);
+}
+#ch-guess-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--tpir-blue-dk);
+  font-family: inherit;
+  min-width: 0;
+}
+.guess-input-row .btn { padding: 10px 18px; font-size: 18px; }
+.ch-feedback {
+  font-size: 20px;
+  font-weight: 700;
+  min-height: 28px;
+  text-align: center;
+  color: var(--tpir-yellow);
+}
+
+.ch-progress {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+.ch-item-dot {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  border: 3px solid var(--card-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 22px;
+  color: var(--text-dim);
+}
+.ch-item-dot.current { border-color: var(--tpir-yellow); color: var(--tpir-yellow); }
+.ch-item-dot.done    { background: var(--tpir-green); border-color: var(--tpir-green); color: white; }
+
+.cliff-mountain-wrap {
+  background: linear-gradient(180deg, #87ceeb 0%, #b8e2f5 60%, #d4ecf7 100%);
+  border-radius: 20px;
+  padding: 12px;
+  border: 3px solid var(--tpir-green);
+  display: flex;
+  justify-content: center;
+}
+#ch-svg { width: 100%; max-width: 360px; height: auto; }
+
+/* ========== CUSTOM ITEMS ========== */
+.custom-wrap {
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+.custom-wrap h2 {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 38px;
+  color: var(--tpir-yellow);
+  margin-bottom: 12px;
+}
+.custom-wrap h3 {
+  font-size: 24px;
+  margin: 24px 0 12px;
+  color: var(--tpir-yellow);
+}
+.custom-help {
+  font-size: 17px;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+.custom-form {
+  background: var(--card-bg);
+  border: 2px solid var(--card-border);
+  border-radius: 16px;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.custom-form label {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  gap: 4px;
+}
+.custom-form input,
+.custom-form select {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 2px solid rgba(255,255,255,0.2);
+  background: rgba(0,0,0,0.3);
+  color: white;
+  font-size: 18px;
+  font-family: inherit;
+  font-weight: 600;
+}
+.custom-form input:focus, .custom-form select:focus {
+  outline: none;
+  border-color: var(--tpir-yellow);
+}
+.custom-form #cust-add {
+  grid-column: 1 / -1;
+}
+
+.custom-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.custom-row {
+  display: grid;
+  grid-template-columns: 50px 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  background: var(--card-bg);
+  border: 2px solid var(--card-border);
+  border-radius: 10px;
+  padding: 10px 16px;
+}
+.custom-row-emoji { font-size: 32px; }
+.custom-row-name { font-weight: 700; font-size: 18px; }
+.custom-row-name small { display: block; color: var(--text-dim); font-weight: 400; font-size: 14px; }
+.custom-row-price {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 22px;
+  color: var(--tpir-yellow);
+}
+.custom-row-delete {
+  background: transparent;
+  border: 2px solid var(--tpir-red);
+  color: var(--tpir-red);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.custom-row-delete:hover { background: var(--tpir-red); color: white; }
+
+/* ========== CELEBRATION ========== */
+.celebrate {
+  animation: celebrate 0.6s ease-out;
+}
+@keyframes celebrate {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.08) rotate(-2deg); }
+  50% { transform: scale(1.12) rotate(2deg); }
+  75% { transform: scale(1.08) rotate(-1deg); }
+}
+
+/* ========== CELEBRATION OVERLAY ========== */
+#celebration-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 10, 30, 0.92);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.celebration-content {
+  text-align: center;
+  z-index: 2010;
+  position: relative;
+  padding: 20px;
+}
+
+.celebration-title {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: clamp(48px, 9vw, 110px);
+  background: linear-gradient(135deg, var(--tpir-yellow) 0%, var(--tpir-orange) 35%, var(--tpir-red) 65%, var(--tpir-pink) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 2px;
+  filter: drop-shadow(4px 4px 0 rgba(0,0,0,0.6));
+  animation: celebPulse 1.5s ease-in-out infinite;
+  margin-bottom: 30px;
+  line-height: 1.05;
+}
+
+@keyframes celebPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.celebration-prize {
+  background: linear-gradient(180deg, rgba(255,215,0,0.18) 0%, rgba(255,215,0,0.06) 100%);
+  border: 5px solid var(--tpir-yellow);
+  border-radius: 28px;
+  padding: 28px 50px;
+  margin: 0 auto 36px auto;
+  display: inline-block;
+  box-shadow: 0 0 60px rgba(255, 215, 0, 0.45), 0 0 20px rgba(255,215,0,0.3) inset;
+  animation: prizePop 0.6s ease-out;
+}
+
+@keyframes prizePop {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+.prize-label {
+  font-size: clamp(20px, 2.4vw, 34px);
+  color: var(--text-light);
+  font-weight: 700;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+.prize-amount {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: clamp(64px, 10vw, 120px);
+  color: var(--tpir-yellow);
+  text-shadow: 4px 4px 0 var(--tpir-red), 6px 6px 18px rgba(0,0,0,0.4);
+  line-height: 1;
+}
+
+.celebration-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-celeb {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 26px;
+  padding: 16px 36px;
+  border: 3px solid var(--tpir-yellow);
+  border-radius: 16px;
+  cursor: pointer;
+  color: white;
+  background: var(--tpir-red);
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 0.15s, box-shadow 0.15s;
+  letter-spacing: 1px;
+}
+.btn-celeb:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+
+.btn-celeb-menu {
+  background: transparent;
+  border-color: var(--text-dim);
+  color: var(--text-light);
+}
+
+/* Confetti */
+.confetti-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2005;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -5%;
+  width: 12px;
+  height: 12px;
+  opacity: 0.9;
+  animation: confettiFall linear forwards;
+}
+
+@keyframes confettiFall {
+  0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg) scale(0.5); opacity: 0.3; }
+}
+
+/* ========== PLAYER SETUP MODAL ========== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 10, 30, 0.85);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-box {
+  background: linear-gradient(180deg, var(--tpir-blue-2) 0%, var(--tpir-blue) 100%);
+  border: 4px solid var(--tpir-yellow);
+  border-radius: 22px;
+  padding: 28px 32px;
+  max-width: 560px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+}
+
+.modal-box h2 {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 32px;
+  color: var(--tpir-yellow);
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+.pm-rules {
+  background: rgba(255, 215, 0, 0.10);
+  border: 2px solid rgba(255, 215, 0, 0.45);
+  border-radius: 14px;
+  padding: 14px 18px 14px 18px;
+  margin-bottom: 18px;
+}
+
+.pm-rules-header {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--tpir-yellow);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.pm-rules-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.pm-rules-list li {
+  font-size: 17px;
+  color: var(--text-light);
+  line-height: 1.45;
+  padding: 4px 0 4px 22px;
+  position: relative;
+}
+
+.pm-rules-list li::before {
+  content: "▸";
+  color: var(--tpir-yellow);
+  font-weight: bold;
+  position: absolute;
+  left: 4px;
+  top: 4px;
+}
+
+.pm-section-header {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--tpir-yellow);
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.modal-help {
+  font-size: 15px;
+  color: var(--text-dim);
+  text-align: left;
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+
+.pm-count-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: rgba(0,0,0,0.25);
+  padding: 12px;
+  border-radius: 14px;
+  margin: 8px 0 14px 0;
+  flex-wrap: wrap;
+}
+
+.pm-count-label {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-light);
+}
+
+.pm-count-btn {
+  font-size: 28px;
+  font-weight: 900;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pm-count-value {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 38px;
+  color: var(--tpir-yellow);
+  min-width: 50px;
+  text-align: center;
+}
+
+.pm-names {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.pm-name-input {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 2px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.95);
+  color: var(--tpir-blue-dk);
+  font-size: 18px;
+  font-weight: 700;
+  font-family: inherit;
+  width: 100%;
+}
+.pm-name-input:focus {
+  outline: none;
+  border-color: var(--tpir-yellow);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1100px) {
+  .plinko-wrap, .wheel-wrap, .cliff-wrap {
+    grid-template-columns: 1fr;
+  }
+  .game-grid { grid-template-columns: 1fr; }
+  .bidders-row { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 700px) {
+  .title { font-size: 24px; }
+  .item-name { font-size: 28px; }
+  .reveal-price { font-size: 56px; }
+  .custom-form { grid-template-columns: 1fr; }
+}
