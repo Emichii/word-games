@@ -40,9 +40,28 @@ function themeBadge(item) {
 // ---------- Celebration Overlay ----------
 let _celebPlayAgainCb = null;
 
-function showCelebration(prizeAmount, onPlayAgain) {
+function showCelebration(config, onPlayAgain) {
+  // Accept either a number (legacy Plinko dollar prize) or an object:
+  //   { title, label, prizeText, subtitle }
+  if (typeof config === 'number') {
+    config = {
+      title: 'Congratulations!',
+      label: 'You won',
+      prizeText: '$' + config.toLocaleString(),
+      subtitle: ''
+    };
+  }
+  const title    = config.title    || 'Congratulations!';
+  const label    = config.label    || '';
+  const prizeTxt = config.prizeText || '';
+  const subtitle = config.subtitle || '';
+
+  document.querySelector('.celebration-title').textContent = title;
+  $('celeb-label').textContent = label;
+  $('celeb-amount').textContent = prizeTxt;
+  $('celeb-subtitle').textContent = subtitle;
+
   const overlay = $('celebration-overlay');
-  $('celeb-amount').textContent = '$' + prizeAmount.toLocaleString();
   _celebPlayAgainCb = onPlayAgain || null;
 
   // Spawn confetti
@@ -929,11 +948,13 @@ function onWheelLanded(value) {
   s.spins += 1;
 
   if (bwBonusMode) {
-    // Bonus spin (after exact $1) — green = +$5000, certain values
+    // Bonus spin (after exact $1)
+    const bonusPlayer = bwSpinners[bwCurrent];
     let msg = `Bonus spin: ¢${value}.`;
-    if (value === 100) msg += ' 🎉 $25,000!';
-    else if (value === 5 || value === 15) msg += ' 🎉 $10,000!';
-    else msg += ' No bonus.';
+    let bonusWon = 0;
+    if (value === 100)      { msg += ' 🎉 $25,000!'; bonusWon = 25000; }
+    else if (value === 5 || value === 15) { msg += ' 🎉 $10,000!'; bonusWon = 10000; }
+    else                    { msg += ' No bonus.'; }
     $('bw-result-label').textContent = msg;
     $('bw-result').classList.remove('hidden');
     bwBonusMode = false;
@@ -941,6 +962,25 @@ function onWheelLanded(value) {
     $('bw-second-spin').classList.add('hidden');
     $('bw-next-player').classList.add('hidden');
     $('bw-new-round').classList.remove('hidden');
+    // Celebrate the bonus win!
+    setTimeout(() => {
+      if (bonusWon > 0) {
+        showCelebration({
+          title: 'JACKPOT!',
+          label: `${bonusPlayer.name} won`,
+          prizeText: '$' + bonusWon.toLocaleString(),
+          subtitle: 'Bonus spin!'
+        }, () => _beginWheel());
+      } else {
+        // No bonus, but still won the round with exact $1
+        showCelebration({
+          title: 'Congratulations!',
+          label: 'Winner',
+          prizeText: bonusPlayer.name,
+          subtitle: 'EXACT $1 — perfect spin!'
+        }, () => _beginWheel());
+      }
+    }, 1500);
     return;
   }
 
@@ -1024,9 +1064,19 @@ function showWheelWinner() {
   if (winners.length === 0) {
     $('bw-result-label').textContent = 'Everyone busted!';
   } else if (winners.length === 1) {
-    bwSpinners[winners[0]].exact = (bwSpinners[winners[0]].score === 100);
-    $('bw-result-label').textContent = `🎉 ${bwSpinners[winners[0]].name} wins with ¢${best}! 🎉`;
+    const w = bwSpinners[winners[0]];
+    w.exact = (w.score === 100);
+    $('bw-result-label').textContent = `🎉 ${w.name} wins with ¢${best}! 🎉`;
     renderSpinners();
+    // Celebrate the winner!
+    setTimeout(() => {
+      showCelebration({
+        title: 'Congratulations!',
+        label: 'Winner',
+        prizeText: w.name,
+        subtitle: w.exact ? `EXACT $1 — perfect spin!` : `with ¢${best}`
+      }, () => _beginWheel());
+    }, 1200);
   } else {
     $('bw-result-label').textContent = `Tie at ¢${best} between ${winners.map(i => bwSpinners[i].name).join(' & ')} — spin-off!`;
   }

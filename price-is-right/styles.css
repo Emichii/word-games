@@ -831,6 +831,15 @@ body {
   line-height: 1;
 }
 
+.prize-subtitle {
+  font-size: clamp(18px, 2vw, 28px);
+  color: var(--text-light);
+  font-weight: 700;
+  margin-top: 12px;
+  letter-spacing: 1px;
+}
+.prize-subtitle:empty { display: none; }
+
 .celebration-buttons {
   display: flex;
   gap: 20px;
