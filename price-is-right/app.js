@@ -252,6 +252,9 @@ function openGameSetup(gameKey, onStart) {
   $('pm-save').textContent = pmShowPlayers ? '✓ Start Game' : "✓ Let's Play!";
 
   if (pmShowPlayers) {
+    // Pre-fill with saved names if any, otherwise the default "Player 1, 2..."
+    // labels. Staff can hit Save as-is for a quick game, or type over them
+    // with resident names.
     const current = loadPlayers();
     pmDraftCount = current.length;
     pmDraftNames = [...current];
@@ -887,7 +890,10 @@ function _beginWheel() {
   $('bw-wheel-group').style.transform = 'rotate(0deg)';
   buildWheelSvg();
   renderSpinners();
-  $('bw-result').classList.add('hidden');
+  // Keep result box visible with a friendly default — the host uses it
+  // as the running game-state readout.
+  $('bw-result').classList.remove('hidden');
+  $('bw-result-label').textContent = `${bwSpinners[0].name} is up first!`;
   $('bw-spin').classList.remove('hidden');
   $('bw-spin').disabled = false;
   $('bw-spin').textContent = `🎡 ${bwSpinners[0].name}, SPIN!`;
@@ -905,12 +911,22 @@ function renderSpinners() {
     if (i === bwCurrent && !allDone()) div.classList.add('active');
     if (s.busted) div.classList.add('busted');
     if (s.exact) div.classList.add('winner');
+
+    // Build status line: spin count + (optional) running score + (optional) BUSTED tag
+    let status = s.spins === 0 ? "Hasn't spun" : (s.spins === 1 ? '1 spin' : '2 spins');
+    let scoreHtml = '';
+    if (s.score !== null) {
+      scoreHtml = `<span class="spinner-score-inline">¢${s.score}</span>`;
+    }
+    let bustedHtml = s.busted ? '<span class="spinner-busted-tag">BUSTED</span>' : '';
+
     div.innerHTML = `
-      <div>
-        <div class="spinner-name">${s.name}</div>
-        <div class="spinner-spins">${s.spins === 0 ? 'Hasn\'t spun' : (s.spins === 1 ? '1 spin' : '2 spins')} ${s.busted ? '• BUSTED' : ''}</div>
+      <div class="spinner-name">${s.name}</div>
+      <div class="spinner-status">
+        <span>${status}</span>
+        ${scoreHtml}
+        ${bustedHtml}
       </div>
-      <div class="spinner-score">${s.score === null ? '—' : '¢' + s.score}</div>
     `;
     wrap.appendChild(div);
   });

@@ -467,37 +467,59 @@ body {
 /* ========== BIG WHEEL ========== */
 .wheel-wrap {
   display: grid;
-  grid-template-columns: 360px 1fr;
-  gap: 32px;
-  max-width: 1200px;
+  grid-template-columns: 260px 300px 1fr;
+  gap: 28px;
+  max-width: 1400px;
   margin: 0 auto;
   width: 100%;
-  align-items: center;
+  align-items: start;
+  padding-top: 8px;
 }
 
-.wheel-side { display: flex; flex-direction: column; gap: 18px; }
+.wheel-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: sticky;
+  top: 90px;
+}
+
+.wheel-players {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
 
 .wheel-spinners {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+  padding-right: 6px;
 }
+.wheel-spinners::-webkit-scrollbar { width: 8px; }
+.wheel-spinners::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+.wheel-spinners::-webkit-scrollbar-thumb { background: rgba(255,215,0,0.4); border-radius: 4px; }
 
 .spinner-card {
   background: var(--card-bg);
   border: 3px solid var(--card-border);
-  border-radius: 14px;
-  padding: 14px 18px;
+  border-radius: 16px;
+  padding: 16px 22px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 4px;
   transition: all 0.2s;
+  min-height: 84px;
+  justify-content: center;
 }
 .spinner-card.active {
   border-color: var(--tpir-yellow);
   background: rgba(255,215,0,0.12);
+  box-shadow: 0 0 16px rgba(255,215,0,0.25);
 }
-.spinner-card.busted { opacity: 0.5; border-color: var(--tpir-red); }
+.spinner-card.busted { opacity: 0.55; border-color: var(--tpir-red); }
 .spinner-card.winner {
   border-color: var(--tpir-yellow);
   background: rgba(255,215,0,0.25);
@@ -505,33 +527,52 @@ body {
 }
 
 .spinner-name {
-  font-size: 20px;
-  font-weight: 800;
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 26px;
   color: var(--tpir-yellow);
   letter-spacing: 1px;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.spinner-score {
+.spinner-status {
+  font-size: 16px;
+  color: var(--text-dim);
+  font-weight: 600;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.spinner-status .spinner-score-inline {
   font-family: 'Fredoka One', sans-serif;
-  font-size: 32px;
+  font-size: 22px;
   color: var(--text-light);
 }
-.spinner-spins {
-  font-size: 13px;
-  color: var(--text-dim);
-  text-align: right;
+.spinner-status .spinner-busted-tag {
+  color: var(--tpir-red);
+  font-weight: 800;
+  letter-spacing: 1px;
 }
 
 .wheel-result {
   text-align: center;
-  background: linear-gradient(180deg, rgba(255,215,0,0.2), rgba(255,215,0,0.05));
-  border: 3px solid var(--tpir-yellow);
-  border-radius: 16px;
-  padding: 18px;
+  background: linear-gradient(180deg, var(--tpir-yellow) 0%, #f0c500 100%);
+  border: 4px solid #d4a90c;
+  border-radius: 18px;
+  padding: 24px 18px;
+  min-height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 22px rgba(0,0,0,0.35), 0 0 30px rgba(255,215,0,0.25);
 }
 .result-label {
   font-family: 'Fredoka One', sans-serif;
-  font-size: 28px;
-  color: var(--tpir-yellow);
+  font-size: 22px;
+  color: var(--tpir-blue-dk);
+  line-height: 1.2;
+  word-wrap: break-word;
 }
 
 .wheel-board-wrap {
@@ -1049,10 +1090,27 @@ body {
 }
 
 /* ========== RESPONSIVE ========== */
-@media (max-width: 1100px) {
-  .plinko-wrap, .wheel-wrap, .cliff-wrap {
-    grid-template-columns: 1fr;
+@media (max-width: 1280px) {
+  /* On medium screens, drop the wheel into a single-column stack */
+  .wheel-wrap {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "actions players"
+      "wheel   wheel";
   }
+  .wheel-actions { grid-area: actions; position: static; }
+  .wheel-players { grid-area: players; }
+  .wheel-board-wrap { grid-area: wheel; }
+  .wheel-spinners { max-height: 480px; }
+}
+
+@media (max-width: 1100px) {
+  .plinko-wrap, .cliff-wrap { grid-template-columns: 1fr; }
+  .wheel-wrap {
+    grid-template-columns: 1fr;
+    grid-template-areas: "actions" "players" "wheel";
+  }
+  .wheel-spinners { max-height: none; }
   .game-grid { grid-template-columns: 1fr; }
   .bidders-row { grid-template-columns: repeat(2, 1fr); }
 }

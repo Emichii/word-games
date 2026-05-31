@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Price Is Right!</title>
-  <link rel="stylesheet" href="styles.css?v=14">
+  <link rel="stylesheet" href="styles.css?v=17">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
 </head>
@@ -122,12 +122,10 @@
     <!-- ========== BIG WHEEL ========== -->
     <section class="screen" id="screen-wheel">
       <div class="wheel-wrap">
-        <div class="wheel-side">
-          <div class="wheel-spinners" id="bw-spinners">
-            <!-- 3 spinner slots injected by JS -->
-          </div>
-          <div class="wheel-result hidden" id="bw-result">
-            <p class="result-label" id="bw-result-label">—</p>
+        <!-- Left column: info box + action buttons -->
+        <div class="wheel-actions">
+          <div class="wheel-result" id="bw-result">
+            <p class="result-label" id="bw-result-label">Ready to play!</p>
           </div>
           <div class="controls-row controls-stack">
             <button class="btn btn-primary" id="bw-spin">🎡 SPIN!</button>
@@ -138,6 +136,15 @@
             <button class="btn btn-outline" id="bw-back">← Back</button>
           </div>
         </div>
+
+        <!-- Middle column: player list -->
+        <div class="wheel-players">
+          <div class="wheel-spinners" id="bw-spinners">
+            <!-- player cards injected by JS -->
+          </div>
+        </div>
+
+        <!-- Right column: the wheel -->
         <div class="wheel-board-wrap">
           <div class="wheel-pointer">▼</div>
           <svg id="bw-svg" viewBox="-260 -260 520 520">
@@ -269,7 +276,7 @@
     </div>
   </div>
 
-  <script src="data.js?v=14"></script>
-  <script src="app.js?v=14"></script>
+  <script src="data.js?v=17"></script>
+  <script src="app.js?v=17"></script>
 </body>
 </html>
