@@ -3,3 +3,10 @@
 *.jpg
 *.pptx
 vecteezy_*/
+
+# Game asset folders — keep these tracked even though *.jpg is ignored above
+!price-is-right/images/*.jpg
+!price-is-right/images/*.png
+!price-is-right/images/*.webp
+!bingo-caller/images/*.jpg
+!bingo-caller/images/*.png
