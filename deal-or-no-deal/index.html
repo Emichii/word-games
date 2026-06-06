@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deal or No Deal!</title>
+  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+
+    <!-- ========== TOP BAR ========== -->
+    <div class="top-bar">
+      <div class="hamburger-wrap">
+        <button id="hamburger-btn" class="hamburger-btn" aria-label="Menu">&#9776;</button>
+        <div id="hamburger-menu" class="hamburger-menu hidden">
+          <button id="menu-home" class="menu-item">New Game</button>
+          <a href="../word_games.html" class="menu-item">Return to Games</a>
+        </div>
+      </div>
+      <h1 class="title">DEAL <span class="title-or">or</span> NO DEAL</h1>
+      <div class="top-bar-right">
+        <span id="round-label" class="round-label hidden"></span>
+      </div>
+    </div>
+
+    <!-- ========== SETUP SCREEN ========== -->
+    <section class="screen active" id="screen-setup">
+      <div class="setup-wrap">
+        <p class="tagline">How many briefcases today?</p>
+        <p class="setup-help">Fewer cases makes a shorter, simpler game. More cases builds more suspense.</p>
+
+        <div class="preset-row" id="preset-row">
+          <button class="preset-btn" data-count="10">10</button>
+          <button class="preset-btn" data-count="16">16</button>
+          <button class="preset-btn" data-count="22">22</button>
+          <button class="preset-btn active" data-count="26">26</button>
+        </div>
+
+        <div class="count-row">
+          <button class="btn btn-outline count-btn" id="count-minus" aria-label="Fewer cases">&minus;</button>
+          <div class="count-display">
+            <span class="count-value" id="count-value">26</span>
+            <span class="count-word">briefcases</span>
+          </div>
+          <button class="btn btn-outline count-btn" id="count-plus" aria-label="More cases">+</button>
+        </div>
+
+        <div class="setup-rules">
+          <div class="setup-rules-header">📋 How to play</div>
+          <ul class="setup-rules-list">
+            <li>Pick one briefcase to keep as <strong>your case</strong> — it stays sealed.</li>
+            <li>Each round, open some of the other cases. The amounts inside are gone from the board.</li>
+            <li>After each round the <strong>Banker</strong> offers to buy your case. Choose <strong>Deal</strong> to take the money, or <strong>No Deal</strong> to keep playing.</li>
+            <li>Refuse every offer and you win whatever is in your own case!</li>
+          </ul>
+        </div>
+
+        <button class="btn btn-gold btn-big" id="start-game">▶ Start Game</button>
+      </div>
+    </section>
+
+    <!-- ========== GAME SCREEN ========== -->
+    <section class="screen" id="screen-game">
+      <div class="game-wrap">
+
+        <!-- Left money board (low values) -->
+        <div class="board board-left" id="board-left"></div>
+
+        <!-- Center: cases + banker -->
+        <div class="center-col">
+          <div class="instruction" id="instruction">Pick the case you want to keep.</div>
+
+          <div class="open-counter hidden" id="open-counter">
+            <div class="oc-label">Open this round</div>
+            <div class="oc-value" id="oc-value">0</div>
+          </div>
+
+          <div class="case-grid" id="case-grid"></div>
+        </div>
+
+        <!-- Right money board (high values) -->
+        <div class="board board-right" id="board-right"></div>
+      </div>
+
+      <!-- Your case, set down at the podium (fixed bottom-centre) -->
+      <div class="your-case-podium hidden" id="your-case-podium">
+        <div class="podium-label">Your Case</div>
+        <div class="podium-case" id="podium-case">
+          <span class="podium-num" id="held-num">—</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ========== BANKER OFFER OVERLAY ========== -->
+  <div id="banker-overlay" class="modal-overlay hidden">
+    <div class="banker-box">
+      <div class="banker-phone">☎</div>
+      <div class="banker-title">The Banker offers</div>
+      <div class="banker-amount" id="banker-amount">$0</div>
+      <div class="banker-sub" id="banker-sub"></div>
+      <div class="banker-question">Deal or No Deal?</div>
+      <div class="banker-buttons">
+        <button class="btn-deal" id="btn-deal">✓ DEAL</button>
+        <button class="btn-nodeal" id="btn-nodeal">✗ NO DEAL</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== FINAL SWAP OVERLAY ========== -->
+  <div id="swap-overlay" class="modal-overlay hidden">
+    <div class="banker-box">
+      <div class="banker-title">Two cases left!</div>
+      <div class="swap-sub">Keep your case (#<span id="swap-held-num">?</span>) or swap it for the last one (#<span id="swap-other-num">?</span>)?</div>
+      <div class="banker-buttons">
+        <button class="btn-deal" id="btn-keep">Keep Mine</button>
+        <button class="btn-nodeal" id="btn-swap">Swap!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== CELEBRATION OVERLAY ========== -->
+  <div id="celebration-overlay" class="hidden">
+    <div class="confetti-container" id="confetti-container"></div>
+    <div class="celebration-content">
+      <h1 class="celebration-title" id="celeb-title">Congratulations!</h1>
+      <div class="celebration-prize">
+        <div class="prize-label" id="celeb-label">You won</div>
+        <div class="prize-amount" id="celeb-amount">$0</div>
+        <div class="prize-subtitle" id="celeb-subtitle"></div>
+      </div>
+      <div class="celebration-buttons">
+        <button id="celeb-play-again" class="btn-celeb">▶ Play Again</button>
+        <button id="celeb-menu" class="btn-celeb btn-celeb-menu">← New Game</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js?v=4"></script>
+</body>
+</html>
