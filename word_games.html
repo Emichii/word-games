@@ -330,10 +330,11 @@
     transform: translateY(-1px);
   }
 
-  .letter-board-cell.vowel {
+  .letter-board-cell.guessable {
     background: #f1c40f;
     color: #1a1a2e;
     border-color: #d4a90c;
+    box-shadow: 0 0 14px rgba(241,196,15,0.45);
   }
 
   .letter-board-cell.hit {
@@ -2029,7 +2030,20 @@ function selectSpinValue(val, index) {
   } else {
     document.getElementById('wof-spin-result').textContent = `Spun ${val} — guess a consonant!`;
   }
+  highlightGuessableLetters();
   playClick();
+}
+
+function highlightGuessableLetters() {
+  document.querySelectorAll('.letter-board-cell').forEach(c => c.classList.remove('guessable'));
+  if (wofSpinValue === 0) return;
+  const wantVowels = wofSpinValue === 100;
+  for (let i = 0; i < 26; i++) {
+    const letter = String.fromCharCode(65 + i);
+    if (usedLetters.has(letter)) continue;
+    if (WOF_VOWELS.has(letter) !== wantVowels) continue;
+    document.getElementById('lb-' + letter)?.classList.add('guessable');
+  }
 }
 
 let wofSpinIndex = -1;
@@ -2180,6 +2194,7 @@ function guessLetter(letter) {
 
   wofSpinValue = 0;
   document.querySelectorAll('.spin-btn').forEach(b => b.classList.remove('active'));
+  highlightGuessableLetters();
 
   setTimeout(() => {
     const hidden = document.querySelectorAll('.wof-tile.letter:not(.revealed)');
